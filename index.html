@@ -1,1 +1,2111 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Digital FoodHub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam&family=Mukta:wght@400;500;600;700&family=Rozha+One&display=swap">
+<style>
+:root{
+  /* Layout: one phone-width column (top bar, scrolling page, bottom tabs). Recipe covers are printed like Indian spice-tin labels. */
+  --bg:#EDEFEA;
+  --surface:#FFFFFF;
+  --surface-2:#F5F6F2;
+  --ink:#1B1A17;
+  --ink-2:#55534C;
+  --ink-3:#7E7B73;
+  --line:#DADBD3;
+  --accent:#E09A0A;
+  --accent-ink:#271A00;
+  --accent-soft:#FBEDCB;
+  --like:#C9381F;
+  --good:#2B7743;
+  --font-display:"Rozha One","Tiro Devanagari Hindi",Georgia,"Times New Roman",serif;
+  --font-body:"Mukta","Hind","Segoe UI",system-ui,-apple-system,sans-serif;
+  --font-hand:"Kalam","Segoe Print","Bradley Hand",cursive;
+  --r:8px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#111210;--surface:#1A1B18;--surface-2:#22241F;--ink:#F0EEE7;--ink-2:#BAB7AD;--ink-3:#8F8C82;--line:#30322C;
+    --accent:#F2B12E;--accent-ink:#231700;--accent-soft:#3A2E10;--like:#FF6B4F;--good:#5DBE7D;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111210;--surface:#1A1B18;--surface-2:#22241F;--ink:#F0EEE7;--ink-2:#BAB7AD;--ink-3:#8F8C82;--line:#30322C;
+  --accent:#F2B12E;--accent-ink:#231700;--accent-soft:#3A2E10;--like:#FF6B4F;--good:#5DBE7D;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
+img{max-width:100%;display:block}
+h1,h2,h3{margin:0;text-wrap:balance}
+p{margin:0}
+ul,ol{margin:0;padding:0}
+.num{font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.muted{color:var(--ink-3)}
+.ic{flex:none;vertical-align:middle}
+
+/* shell */
+#app{height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;background:var(--bg);position:relative}
+@media (min-width:600px){#app{border-left:1px solid var(--line);border-right:1px solid var(--line)}}
+.top{flex:none;display:flex;align-items:center;gap:10px;padding:8px 12px 8px 16px;background:var(--surface);border-bottom:1px solid var(--line)}
+.brand{font-family:var(--font-display);font-size:25px;line-height:1;background:none;border:0;padding:4px 0;display:flex;align-items:center;gap:3px;color:var(--ink)}
+.brand span{background:var(--accent);color:var(--accent-ink);padding:2px 5px 0;border-radius:3px}
+.top-sp{flex:1}
+.tadka-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 11px 5px 8px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);font-weight:700;min-height:36px}
+.tadka-pill .ic{color:var(--like)}
+.me-btn{background:none;border:0;padding:2px;border-radius:50%;min-width:40px;min-height:40px;display:grid;place-items:center}
+.av{border-radius:50%;object-fit:cover;flex:none;display:inline-grid;place-items:center;font-weight:700;line-height:1;overflow:hidden;background:var(--surface-2)}
+#banner:empty{display:none}
+.banner{flex:none;padding:9px 16px;font-size:14px;background:var(--accent-soft);border-bottom:1px solid var(--line);color:var(--ink)}
+main{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-bottom:24px}
+.tabs{flex:none;display:grid;grid-template-columns:repeat(5,1fr);align-items:end;background:var(--surface);border-top:1px solid var(--line);padding:4px 4px 6px}
+.tab{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:12px;font-weight:600;color:var(--ink-3);padding:4px 0 2px;min-height:50px;justify-content:flex-end;position:relative}
+.tab[aria-current="page"]{color:var(--ink)}
+.tab[aria-current="page"]::before{content:"";position:absolute;top:-5px;left:30%;right:30%;height:3px;border-radius:0 0 3px 3px;background:var(--accent)}
+.tab-post .plus{width:46px;height:46px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;margin-top:-20px;border:3px solid var(--surface);box-shadow:0 3px 10px rgba(0,0,0,.18)}
+.tab-post[aria-current="page"]::before{display:none}
+
+/* type */
+.h1{font-family:var(--font-display);font-size:30px;line-height:1.06;font-weight:400}
+.h2{font-family:var(--font-display);font-size:22px;line-height:1.12;font-weight:400}
+.lead{color:var(--ink-2)}
+.hint{font-size:13.5px;color:var(--ink-3)}
+.pad{padding:16px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.sec{padding:12px 16px 4px;display:flex;flex-direction:column;gap:12px}
+.sec-title{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.row-between{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.note{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--r);padding:12px 14px;font-size:14.5px;color:var(--ink-2)}
+.note b{color:var(--ink)}
+
+/* controls */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:8px;border:1px solid var(--line);background:var(--surface);padding:9px 14px;font-weight:600;font-size:15px;min-height:44px;text-decoration:none;color:var(--ink);white-space:nowrap}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn-ink{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.btn-sm{min-height:36px;padding:5px 11px;font-size:14px}
+.btn-block{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.link{background:none;border:0;padding:0;color:var(--ink);text-decoration:underline;text-underline-offset:3px;font-weight:600;font-size:inherit}
+.link.small{font-size:13px;font-weight:500;color:var(--ink-3)}
+.link.danger{color:var(--like)}
+.icon-btn{width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:50%;background:none;border:0;color:var(--ink);text-decoration:none}
+.icon-btn.sm{width:36px;height:36px}
+.icon-btn.on{color:var(--accent)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.scroll-x{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:2px 16px}
+.scroll-x::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 13px;font-size:14px;font-weight:600;white-space:nowrap;min-height:36px;display:inline-flex;align-items:center;gap:6px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.chip-n{color:var(--ink-3);font-weight:500;font-size:13px}
+.chip-sm{min-height:32px;padding:3px 10px;font-size:13.5px}
+.chip-x .ic{opacity:.7}
+.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px}
+.seg button{border:0;background:none;padding:5px 12px;border-radius:7px;font-size:14px;font-weight:600;color:var(--ink-2);min-height:34px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.14)}
+.seg-wide{display:flex}
+.seg-wide button{flex:1}
+.tag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:3px;background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line);vertical-align:1px;line-height:1.5}
+.tag-promo{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.stepper button{width:38px;height:38px;border:0;background:none;display:grid;place-items:center;border-radius:50%}
+.stepper span{min-width:80px;text-align:center;font-size:14px;font-weight:600}
+input[type=text],input[type=number],input[type=search],select,textarea{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:10px 12px;font-size:16px;min-height:44px}
+textarea{min-height:72px;resize:vertical;line-height:1.4}
+.toggle{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+.toggle input{width:20px;height:20px;accent-color:var(--accent);flex:none}
+
+/* diet marks (Indian veg / non-veg labels) */
+.diet{display:inline-grid;place-items:center;width:15px;height:15px;border:1.5px solid var(--dc);border-radius:2px;flex:none;background:#fff;vertical-align:-2px}
+.diet::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--dc)}
+.diet.veg{--dc:#2B7743}
+.diet.egg{--dc:#B7790A}
+.diet.nonveg{--dc:#8E3B17}
+.diet.nonveg::after{width:0;height:0;border-radius:0;background:none;border-left:4px solid transparent;border-right:4px solid transparent;border-bottom:7px solid var(--dc)}
+
+/* label covers */
+.cover{position:relative;container-type:inline-size;background:var(--bg-c);color:var(--fg-c);overflow:hidden;aspect-ratio:4/3;display:flex}
+.cover::before{content:"";position:absolute;inset:0;pointer-events:none}
+.pat-dots::before{background:radial-gradient(circle,var(--pc) 1.7px,transparent 2.2px) 0 0/12px 12px}
+.pat-gingham::before{background:linear-gradient(90deg,var(--pc) 50%,transparent 0) 0 0/18px 18px,linear-gradient(var(--pc) 50%,transparent 0) 0 0/18px 18px}
+.pat-jaali::before{background:repeating-linear-gradient(45deg,var(--pc) 0 1.5px,transparent 1.5px 13px),repeating-linear-gradient(-45deg,var(--pc) 0 1.5px,transparent 1.5px 13px)}
+.pat-stripes::before{background:repeating-linear-gradient(135deg,var(--pc) 0 7px,transparent 7px 16px)}
+.pat-sun::before{background:repeating-conic-gradient(from 0deg at 50% 120%,var(--pc) 0 5deg,transparent 5deg 10deg)}
+.cover-frame{position:relative;flex:1;margin:6.5cqi;border:3px double currentColor;border-radius:4px;background:var(--bg-c);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4cqi 6cqi;gap:1.6cqi;min-width:0}
+.cover-kicker{font-size:clamp(8.5px,4cqi,13px);letter-spacing:.14em;text-transform:uppercase;font-weight:700;opacity:.86;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cover-dish{font-family:var(--font-display);font-size:clamp(16px,10.5cqi,46px);line-height:1.02;text-wrap:balance;overflow-wrap:anywhere}
+.cover-sub{font-size:clamp(10px,4.3cqi,16px);line-height:1.2;opacity:.92;text-wrap:balance;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cover.photo{background:#222}
+.cover.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cover.photo .cover-frame{visibility:hidden}
+.cover.photo::before{display:none}
+.sticker{position:absolute;right:4cqi;top:4cqi;width:22cqi;min-width:44px;max-width:84px;aspect-ratio:1;border-radius:50%;background:#FFF6DF;color:#2A1B00;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-weight:700;font-size:clamp(9px,3.6cqi,13px);line-height:1.05;transform:rotate(-11deg);border:2px dashed rgba(42,27,0,.45);box-shadow:0 2px 0 rgba(0,0,0,.22)}
+.sticker b{font-size:1.25em}
+.ribbon{position:absolute;left:0;top:8cqi;background:#1B1A17;color:#FFF6DF;font-size:12px;font-weight:700;padding:3px 9px 2px 7px;display:flex;gap:4px;align-items:center;border-radius:0 4px 4px 0}
+.cover.thumb{aspect-ratio:1;width:56px;border-radius:6px}
+.cover.thumb .thumb-l{position:relative;margin:auto;font-family:var(--font-display);font-size:26px;line-height:1;background:var(--bg-c);padding:4px 7px 1px;border-radius:3px;border:2px double currentColor}
+.cover.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.d-cover .cover{aspect-ratio:16/10}
+
+/* hero + feed */
+.hero{padding:20px 16px 12px;display:flex;flex-direction:column;gap:12px}
+.hero-q{font-family:var(--font-display);font-size:clamp(32px,9vw,42px);line-height:1;font-weight:400}
+.hero-sub{color:var(--ink-2);font-size:15.5px;max-width:42ch}
+.searchbar{display:flex;align-items:center;gap:8px;background:var(--surface);border:2px solid var(--ink);border-radius:10px;padding:3px 4px 3px 12px}
+.searchbar:focus-within{outline:2.5px solid var(--accent);outline-offset:2px}
+.searchbar input{flex:1;min-width:0;border:0;background:transparent;padding:9px 0;font-size:16px;outline:none;min-height:40px}
+.searchbar input::-webkit-search-cancel-button{display:none}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.rcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;cursor:pointer;text-align:left;min-width:0}
+.rcard-body{padding:9px 10px 6px;display:flex;flex-direction:column;gap:2px;flex:1}
+.rcard-dish{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);min-width:0}
+.rcard-dish span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rcard-title{font-weight:600;font-size:15px;line-height:1.25}
+.rcard-by{font-size:13px;color:var(--ink-2)}
+.rcard-meta{font-size:12.5px;color:var(--ink-3);display:flex;gap:5px;align-items:center}
+.rcard-eng{display:flex;gap:12px;align-items:center;margin-top:auto;padding-top:4px;font-size:13px;color:var(--ink-2)}
+.eng{display:inline-flex;align-items:center;gap:4px;background:none;border:0;padding:0;min-height:34px;font-weight:600;color:inherit}
+.eng.on{color:var(--like)}
+.promo{display:flex;gap:12px;overflow-x:auto;margin:0 -16px;padding:2px 16px 4px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.promo .rcard{flex:0 0 58%;scroll-snap-align:start}
+.welcome{margin:14px 16px 0;padding:14px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.role-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.role{border:1.5px solid var(--line);border-radius:var(--r);padding:12px;text-align:left;background:var(--surface-2);display:flex;flex-direction:column;gap:4px}
+.role b{font-family:var(--font-display);font-weight:400;font-size:21px;line-height:1.1}
+.role span{font-size:13.5px;color:var(--ink-2);line-height:1.3}
+.skel{background:linear-gradient(90deg,var(--surface-2),var(--line),var(--surface-2));background-size:200% 100%;animation:sh 1.3s infinite linear;border-radius:4px}
+@keyframes sh{to{background-position:-200% 0}}
+.empty{padding:28px 16px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center;color:var(--ink-2)}
+.empty h3{font-family:var(--font-display);font-size:22px;font-weight:400;color:var(--ink)}
+.empty p{max-width:36ch}
+
+/* search */
+.results{display:flex;flex-direction:column}
+.group{border-top:2px solid var(--ink);padding-top:10px;margin-top:18px}
+.group-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.group-dish{font-family:var(--font-display);font-size:25px;font-weight:400;line-height:1.1}
+.group-n{font-size:13px;color:var(--ink-3)}
+.group-foot{display:flex;gap:8px;flex-wrap:wrap;padding-top:10px}
+.ways{list-style:none}
+.way{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer;align-items:start}
+.way-rank{font-family:var(--font-display);font-size:22px;line-height:1.1;color:var(--ink-3);text-align:center}
+.way.best .way-rank{color:var(--ink)}
+.way-main{display:flex;flex-direction:column;gap:2px;min-width:0}
+.best-tag{align-self:flex-start;display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent-ink);background:var(--accent);padding:1px 7px;border-radius:3px;margin-bottom:2px}
+.way-title{font-weight:600;line-height:1.25;display:flex;gap:6px;align-items:baseline}
+.way-by{font-size:13.5px;color:var(--ink-2)}
+.way-meta{font-size:13px;color:var(--ink-3)}
+.way-meta b{color:var(--ink);font-weight:600}
+.why{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:4px;padding:0 6px;margin:4px 4px 0 0;color:var(--ink-2);background:var(--surface)}
+.way-score{text-align:right;font-size:12.5px;color:var(--ink-3);white-space:nowrap}
+.way-score b{display:block;font-size:16px;color:var(--ink)}
+.cmp-wrap{overflow-x:auto;margin:12px 0 0;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.cmp{border-collapse:collapse;font-size:13.5px;width:100%}
+.cmp th,.cmp td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.cmp tr:last-child th,.cmp tr:last-child td{border-bottom:0}
+.cmp thead th{font-weight:700;min-width:130px;color:var(--ink)}
+.cmp tbody th{color:var(--ink-3);font-weight:500;white-space:nowrap;position:sticky;left:0;background:var(--surface)}
+.list{list-style:none}
+.list-row{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.lr-hit{display:flex;gap:12px;align-items:center;flex:1;min-width:0;cursor:pointer}
+.lr-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.lr-title{font-weight:600;display:flex;gap:6px;align-items:center}
+.lr-sub{font-size:13px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis}
+.lr-pct{font-weight:700;font-size:14px}
+.lr-actions{display:flex}
+.match{display:flex;align-items:center;gap:8px;margin-top:4px}
+.match-bar{flex:0 0 64px;height:6px;border-radius:9px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+.match-bar span{display:block;height:100%;background:var(--good)}
+.match-t{font-size:12.5px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* recipe sheet */
+#sheet{position:fixed;inset:0;z-index:30;display:flex;justify-content:center;background:rgba(0,0,0,.4)}
+#sheet[hidden]{display:none}
+.sheet{width:100%;max-width:560px;height:100%;background:var(--bg);display:flex;flex-direction:column;animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(22px);opacity:.5}to{transform:none;opacity:1}}
+.sheet-bar{flex:none;display:flex;align-items:center;gap:2px;padding:4px 6px;background:var(--surface);border-bottom:1px solid var(--line)}
+.sheet-title{flex:1;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px}
+.sheet-body{flex:1;min-height:0;overflow-y:auto;padding-bottom:40px}
+.d-head{padding:16px 16px 6px;display:flex;flex-direction:column;gap:5px}
+.d-dish{font-family:var(--font-display);font-size:36px;line-height:1;font-weight:400}
+.d-title{font-size:18px;color:var(--ink-2);line-height:1.3}
+.bestline{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;background:var(--accent);color:var(--accent-ink);padding:3px 10px;border-radius:4px}
+.rankline{font-size:13.5px;color:var(--ink-2)}
+.byline{display:flex;align-items:center;gap:10px;margin-top:8px}
+.who{flex:1;min-width:0;display:flex;flex-direction:column}
+.who b{font-weight:700;line-height:1.2}
+.who span{font-size:13px;color:var(--ink-3)}
+.d-stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:8px 16px}
+.d-stats>div{padding:9px 2px;display:flex;flex-direction:column;align-items:center;gap:1px;border-right:1px solid var(--line);text-align:center}
+.d-stats>div:last-child{border-right:0}
+.k{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3);font-weight:600}
+.v{font-weight:700;font-size:15px;display:inline-flex;align-items:center;gap:5px}
+.v small{font-weight:500;color:var(--ink-3)}
+.d-eng{display:flex;gap:8px;flex-wrap:wrap;padding:6px 16px 10px}
+.pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 13px;font-size:14px;font-weight:700;min-height:40px}
+.pill small{font-weight:500;color:var(--ink-3)}
+.pill.on{color:var(--like);border-color:currentColor}
+.pill-static{cursor:default}
+.market{margin:8px 16px 14px;border:2px dashed var(--ink);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:12px;background:var(--surface)}
+.market-k{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);display:flex;align-items:center;gap:6px}
+.market-empty{border-style:dashed;border-color:var(--line);flex-direction:row;align-items:center;justify-content:space-between;font-size:14px}
+.offer{display:flex;gap:12px;align-items:center}
+.offer+.offer{border-top:1px dotted var(--line);padding-top:12px}
+.offer-main{flex:1;min-width:0}
+.offer-price{font-family:var(--font-display);font-size:24px;line-height:1.1}
+.offer-price small{font-family:var(--font-body);font-size:13.5px;color:var(--ink-2)}
+.offer-sub{font-size:13px;color:var(--ink-2);display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.d-sec{padding:18px 16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.sec-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.ing{list-style:none}
+.ing-row{width:100%;display:grid;grid-template-columns:22px 88px minmax(0,1fr);gap:10px;align-items:baseline;background:none;border:0;border-bottom:1px dotted var(--line);padding:9px 0;text-align:left}
+.ing-row .box{width:20px;height:20px;border:1.5px solid var(--ink-3);border-radius:4px;display:grid;place-items:center;align-self:center;color:#fff}
+.ing-row.on .box{background:var(--good);border-color:var(--good)}
+.ing-row.on .nm{text-decoration:line-through;color:var(--ink-3)}
+.qty{font-weight:700;font-variant-numeric:tabular-nums}
+.ing-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:6px;font-size:14px;color:var(--ink-2);flex-wrap:wrap}
+.steps{list-style:none;display:flex;flex-direction:column}
+.steps li{display:grid;grid-template-columns:32px minmax(0,1fr);gap:10px;padding:9px 0}
+.n{width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--ink);display:grid;place-items:center;font-family:var(--font-display);font-size:16px;line-height:1;padding-top:3px}
+.tchip{display:inline-flex;align-items:center;gap:3px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--ink);border-radius:999px;padding:0 8px;font-size:inherit;font-weight:700;line-height:1.55}
+.tip{margin:4px 16px 18px;padding:12px 16px 14px 18px;background:var(--surface);background-image:repeating-linear-gradient(transparent 0 29px,var(--line) 29px 30px);background-position:0 30px;border-left:4px solid var(--like);border-radius:2px;font-family:var(--font-hand);font-size:18px;line-height:30px;color:var(--ink)}
+.tip-k{display:block;font-family:var(--font-body);font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);line-height:30px}
+.madeit{margin:0 16px 18px;padding:16px;background:var(--ink);color:var(--surface);border-radius:10px;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.madeit h3{font-family:var(--font-display);font-size:26px;font-weight:400;line-height:1}
+.madeit p{opacity:.85;font-size:14.5px}
+.madeit .btn:not(.btn-primary){background:transparent;color:var(--surface);border-color:currentColor}
+.cform{display:flex;flex-direction:column;gap:8px}
+.comments{list-style:none;display:flex;flex-direction:column;gap:14px;padding-top:6px}
+.cm{display:grid;grid-template-columns:32px minmax(0,1fr);gap:10px}
+.cm-head{font-size:13.5px;display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
+.cm-head b{font-weight:700}
+.cm-head span{color:var(--ink-3)}
+.cm p{white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px}
+
+/* bottom-sheet modal */
+#modal{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.48);display:flex;align-items:flex-end;justify-content:center}
+#modal[hidden]{display:none}
+.modal-card{width:100%;max-width:560px;max-height:92%;overflow-y:auto;background:var(--surface);border-radius:16px 16px 0 0;padding:16px 16px 24px;display:flex;flex-direction:column;gap:12px;animation:up .2s ease-out}
+.stars-in{display:flex;gap:6px}
+.stars-in button{width:50px;height:50px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink-3);display:grid;place-items:center}
+.stars-in button.on{color:#B7790A;border-color:var(--accent);background:var(--accent-soft)}
+.pick{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r)}
+.pick-row{display:flex;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);font-size:15px}
+.pick-row:last-child{border-bottom:0}
+.pick-row input{width:20px;height:20px;accent-color:var(--accent)}
+.err{color:var(--like);font-weight:600;font-size:14px}
+.err:empty{display:none}
+
+/* cook mode */
+#cook{position:fixed;inset:0;z-index:50;background:#1B1A17;color:#F6F2E8;display:flex;justify-content:center}
+#cook[hidden]{display:none}
+.cook{width:100%;max-width:560px;display:flex;flex-direction:column;padding:12px 18px 20px;gap:14px}
+.cook .icon-btn{color:#F6F2E8}
+.cook-k{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#C9C3B4}
+.cook-dish{font-family:var(--font-display);font-size:28px;line-height:1.05}
+.cook-dots{display:flex;gap:5px}
+.cook-dots span{flex:1;height:4px;border-radius:4px;background:rgba(246,242,232,.2)}
+.cook-dots span.on{background:#F2B12E}
+.cook-step{font-size:clamp(22px,6vw,28px);line-height:1.38;flex:1;overflow-y:auto}
+.cook-step .tchip{background:#F2B12E;border-color:#F2B12E;color:#231700}
+.cook-ings{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.cook-ing{border:1px solid rgba(246,242,232,.3);border-radius:999px;padding:3px 10px;font-size:14px}
+.cook-nav{display:grid;grid-template-columns:1fr 2fr;gap:10px}
+.cook-nav .btn{min-height:54px;font-size:17px}
+.cook-nav .btn:not(.btn-primary){background:transparent;color:#F6F2E8;border-color:rgba(246,242,232,.35)}
+.cook .btn-primary{background:#F2B12E;border-color:#F2B12E;color:#231700}
+
+/* timer + toast */
+#timer{position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:60;background:var(--ink);color:var(--surface);border-radius:999px;padding:6px 6px 6px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 6px 18px rgba(0,0,0,.28);max-width:calc(100% - 24px)}
+#timer[hidden]{display:none}
+#timer .t-left{font-weight:700;font-size:17px;font-variant-numeric:tabular-nums}
+#timer .t-label{font-size:13px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+#timer.done{background:var(--like);color:#fff}
+#timer .btn{min-height:34px}
+#toast{position:fixed;left:50%;bottom:92px;transform:translate(-50%,16px);opacity:0;transition:opacity .2s,transform .2s;background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:10px;font-weight:600;font-size:14.5px;z-index:70;pointer-events:none;max-width:calc(100% - 32px);width:max-content;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* rewards */
+.wallet{position:relative;background:var(--ink);color:var(--surface);border-radius:12px;padding:16px 18px 14px;display:flex;flex-direction:column;gap:8px}
+.wallet::before,.wallet::after{content:"";position:absolute;top:calc(100% - 64px);width:22px;height:22px;border-radius:50%;background:var(--bg)}
+.wallet::before{left:-11px}
+.wallet::after{right:-11px}
+.wallet .k{color:inherit;opacity:.7}
+.lvl{font-family:var(--font-display);font-size:18px;color:var(--accent)}
+.wallet-num{font-family:var(--font-display);font-size:56px;line-height:1}
+.wallet-num small{font-family:var(--font-body);font-size:16px;font-weight:600;opacity:.7;margin-left:6px}
+.bar{height:8px;background:color-mix(in srgb,var(--surface) 22%,transparent);border-radius:999px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--accent);border-radius:999px}
+.wallet-sub{font-size:14px;opacity:.85}
+.wallet-cut{border-top:2px dashed color-mix(in srgb,var(--surface) 30%,transparent);margin:10px 4px 2px}
+.wallet-foot{font-size:13.5px}
+.wallet-foot span{opacity:.75}
+.lb{list-style:none}
+.lb li{display:grid;grid-template-columns:30px 36px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.lb .rk{font-family:var(--font-display);font-size:21px;text-align:center;line-height:1}
+.lb li.me{background:var(--accent-soft);margin:0 -16px;padding:9px 16px}
+.lb .nm{display:flex;flex-direction:column;min-width:0}
+.lb .nm b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb .nm span{font-size:12.5px;color:var(--ink-3)}
+.lb .pts{font-weight:700;font-variant-numeric:tabular-nums}
+.badges{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 8px}
+.badge{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
+.stamp{--sc:var(--like);width:84px;height:84px;border-radius:50%;border:3px double var(--sc);color:var(--sc);display:grid;place-items:center;text-align:center;font-family:var(--font-display);font-size:12.5px;line-height:1.08;padding:6px;transform:rotate(var(--rot,-8deg));text-transform:uppercase;overflow-wrap:anywhere}
+.stamp.long{font-size:10.5px}
+.badge:nth-child(3n+2) .stamp{--sc:var(--good);--rot:6deg}
+.badge:nth-child(3n) .stamp{--sc:#B7790A;--rot:-3deg}
+.badge.locked .stamp{--sc:var(--ink-3);border-style:dashed;opacity:.55;transform:none}
+.badge-d{font-size:12.5px;color:var(--ink-2);line-height:1.25}
+.badge-p{font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.earn{list-style:none}
+.earn li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dotted var(--line);font-size:15px}
+.earn b{font-variant-numeric:tabular-nums;color:var(--good);white-space:nowrap}
+
+/* me */
+.profile{display:flex;gap:14px;align-items:center}
+.profile-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.stats4{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.stats4>div{padding:10px 4px;text-align:center;border-right:1px solid var(--line);display:flex;flex-direction:column}
+.stats4>div:last-child{border-right:0}
+.stats4 b{font-family:var(--font-display);font-size:22px;font-weight:400;line-height:1.1}
+.stats4 span{font-size:12px;color:var(--ink-3)}
+.dot{display:inline-grid;place-items:center;min-width:18px;height:18px;border-radius:9px;background:var(--like);color:#fff;font-size:11px;font-weight:700;padding:0 5px}
+.order{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);padding:12px;display:flex;flex-direction:column;gap:6px}
+.order-top{display:flex;gap:10px;align-items:center}
+.order-body{font-size:14px;color:var(--ink-2)}
+.order-body q{color:var(--ink)}
+.status{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:var(--surface-2);border:1px solid var(--line);white-space:nowrap}
+.status.accepted,.status.ready{background:var(--accent-soft);border-color:var(--accent)}
+.status.done{color:var(--good);border-color:currentColor}
+.status.declined{color:var(--like);border-color:currentColor}
+.orders{display:flex;flex-direction:column;gap:10px}
+.ev{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+.ev small{display:block;color:var(--ink-3);font-size:12.5px}
+.ev .plus-pts{font-weight:700;color:var(--good);font-size:13.5px;white-space:nowrap}
+
+/* forms */
+.form{display:flex;flex-direction:column;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field>span:first-child{font-size:14px;font-weight:700}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ing-edit-head{display:grid;grid-template-columns:62px 84px 1fr 36px;gap:6px}
+.ing-edit{display:grid;grid-template-columns:62px 84px minmax(0,1fr) 36px;gap:6px;align-items:center}
+.ing-edit select{padding:10px 6px}
+.step-edit{display:grid;grid-template-columns:28px minmax(0,1fr) 36px;gap:6px;align-items:start}
+.step-edit .n{margin-top:8px}
+fieldset{border:1px solid var(--line);border-radius:var(--r);padding:12px;margin:0;display:flex;flex-direction:column;gap:12px;background:var(--surface);min-width:0}
+legend{font-weight:700;padding:0 6px}
+.photo-pick{display:grid;place-items:center;border:2px dashed var(--line);border-radius:var(--r);aspect-ratio:16/9;overflow:hidden;position:relative;cursor:pointer;background:var(--surface-2);color:var(--ink-2);text-align:center;font-weight:600}
+.photo-pick img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.photo-pick input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.photo-pick .ic{display:block;margin:0 auto 4px}
+.cover-pick{max-width:240px}
+.cover-pick .rcard{pointer-events:none}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.swatch{width:36px;height:36px;border-radius:50%;border:2px solid var(--surface);background:var(--sw);box-shadow:0 0 0 1px var(--line)}
+.swatch[aria-pressed="true"]{box-shadow:0 0 0 2.5px var(--ink)}
+.form-actions{display:flex;gap:10px}
+.form-actions .btn-block{flex:1}
+.card-form{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+
+@media (max-width:360px){.grid{gap:8px}.d-dish{font-size:31px}.ing-row{grid-template-columns:22px 76px minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top" id="top"></header>
+  <div id="banner"></div>
+  <main id="main" aria-live="off"></main>
+  <nav class="tabs" id="tabs" aria-label="Sections"></nav>
+</div>
+<div id="sheet" hidden></div>
+<div id="modal" hidden></div>
+<div id="cook" hidden></div>
+<div id="timer" hidden role="timer" aria-live="polite"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="t-left">0:00</span><span class="t-label"></span><button class="btn btn-sm" data-act="timer-stop">Stop</button></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+(() => {
+'use strict';
+
+/* ---------- helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+const arr = v => Array.isArray(v) ? v : [];
+const num = v => { const n = Number(v); return Number.isFinite(n) ? n : 0; };
+const now = () => Date.now();
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const newId = p => p + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4);
+const hashStr = s => { let h = 2166136261; s = String(s); for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
+const plural = (n, one, many) => n === 1 ? one : (many || one + 's');
+const fmtNum = n => { n = Math.round(num(n)); if (n < 1000) return String(n); const k = n / 1000; return (k >= 10 ? Math.round(k) : Math.round(k * 10) / 10) + 'k'; };
+const inr = n => '₹' + Math.round(num(n)).toLocaleString('en-IN');
+const str = (v, max) => typeof v === 'string' ? v.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '').slice(0, max) : '';
+const clean = (v, max) => String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slice(0, max);
+const clampInt = (v, lo, hi, d) => { const n = Math.round(Number(v)); return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : d; };
+const RID = /^[A-Za-z0-9-]{3,40}$/;
+const validAsset = id => typeof id === 'string' && /^[A-Za-z0-9_-]{8,80}$/.test(id) ? id : null;
+const DAY = 86400000;
+function ago(ts) {
+  const s = Math.max(0, (now() - ts) / 1000);
+  if (s < 60) return 'just now';
+  if (s < 3600) return Math.floor(s / 60) + 'm ago';
+  if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+  if (s < 7 * 86400) return Math.floor(s / 86400) + 'd ago';
+  return new Date(ts).toLocaleDateString('en-IN', {day: 'numeric', month: 'short'});
+}
+const fmtClock = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+
+const ICONS = {
+  home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4.2-4.2"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  minus: '<path d="M5 12h14"/>',
+  flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>',
+  heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21.2l7.8-7.7 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>',
+  chat: '<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/>',
+  bookmark: '<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  star: '<path d="m12 2.8 2.9 5.9 6.4.9-4.6 4.5 1.1 6.4L12 17.5l-5.8 3 1.1-6.4-4.6-4.5 6.4-.9z"/>',
+  back: '<path d="M19 12H5M12 19l-7-7 7-7"/>',
+  close: '<path d="M18 6 6 18M6 6l12 12"/>',
+  share: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>',
+  bag: '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  trash: '<path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+  edit: '<path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>',
+  crown: '<path d="m2 7 4 10h12l4-10-6 4-4-7-4 7z"/><path d="M6 21h12"/>',
+  pot: '<path d="M3 11h18M19 11v7a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-7M8 7.5c0-1.5 1-2 1-3.5M12 7.5c0-1.5 1-2 1-3.5M16 7.5c0-1.5 1-2 1-3.5"/>',
+  megaphone: '<path d="m3 11 18-5v12L3 14z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
+  play: '<path d="M6 4l14 8-14 8z"/>',
+  pin: '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/>',
+  camera: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+  copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>'
+};
+const ic = (name, size = 20, filled = false) => `<svg class="ic" width="${size}" height="${size}" viewBox="0 0 24 24" fill="${filled ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ''}</svg>`;
+
+/* ---------- product rules ---------- */
+const CATS = ['Breakfast', 'Main course', 'Rice & biryani', 'Street food', 'Snacks', 'Sweets', 'Drinks'];
+const DIETS = {veg: 'Veg', egg: 'Egg', nonveg: 'Non-veg'};
+const LEVELS_COOK = ['Easy', 'Medium', 'Hard'];
+const UNITS = ['', 'g', 'kg', 'ml', 'l', 'tsp', 'tbsp', 'cup', 'pinch', 'inch', 'cloves', 'to taste'];
+const LEVELS = [{n: 'Naya Cook', min: 0}, {n: 'Home Chef', min: 100}, {n: 'Rasoi Star', min: 300}, {n: 'Ustaad', min: 750}, {n: 'Legend', min: 1500}];
+const PTS = {post: 20, likeIn: 2, commentIn: 3, madeIn: 10, orderIn: 15, follower: 5, madeOut: 5, commentOut: 1};
+const EARN = [
+  ['Post a recipe', PTS.post],
+  ['Someone likes your recipe', PTS.likeIn],
+  ['Someone comments on your recipe', PTS.commentIn],
+  ['Someone cooks it and taps “I made this”', PTS.madeIn],
+  ['Someone orders your dish or kit', PTS.orderIn],
+  ['Someone follows your kitchen', PTS.follower],
+  ['You cook someone else’s recipe', PTS.madeOut],
+  ['You comment on a recipe (once per recipe)', PTS.commentOut]
+];
+const BOOST = {cost: 50, hours: 24};
+const STATUSES = ['accepted', 'declined', 'ready', 'done'];
+const STATUS_LABEL = {sent: 'Waiting for the cook', accepted: 'Accepted', ready: 'Ready', done: 'Delivered', declined: 'Declined', demo: 'Sample kitchen · demo'};
+const PAL = [
+  {name: 'Haldi', bg: '#E3A008', fg: '#2A1B00', pc: 'rgba(42,27,0,.16)'},
+  {name: 'Mirchi', bg: '#B8321B', fg: '#FFF2E4', pc: 'rgba(255,242,228,.18)'},
+  {name: 'Curry leaf', bg: '#2C6A3E', fg: '#EEF6E8', pc: 'rgba(238,246,232,.16)'},
+  {name: 'Neel', bg: '#233F78', fg: '#EEF2FB', pc: 'rgba(238,242,251,.16)'},
+  {name: 'Kesar', bg: '#DD6420', fg: '#221000', pc: 'rgba(34,16,0,.15)'},
+  {name: 'Jamun', bg: '#57284F', fg: '#FBEFF8', pc: 'rgba(251,239,248,.15)'},
+  {name: 'Imli', bg: '#6A3D24', fg: '#F8ECDD', pc: 'rgba(248,236,221,.15)'},
+  {name: 'Pista', bg: '#9CB257', fg: '#1C230B', pc: 'rgba(28,35,11,.15)'}
+];
+const PATS = ['dots', 'gingham', 'jaali', 'stripes', 'sun'];
+const PAT_NAMES = ['Dots', 'Gingham', 'Jaali', 'Stripes', 'Sunburst'];
+const FILTERS = [{k: 'veg', label: 'Veg only'}, {k: 'quick', label: '30 min or less'}, {k: 'easy', label: 'Easy'}, {k: 'order', label: 'Can order'}];
+const TAB_DEF = [['home', 'Home', 'home'], ['search', 'Search', 'search'], ['post', 'Post', 'plus'], ['rewards', 'Tadka', 'flame'], ['me', 'Me', 'user']];
+const TABS = TAB_DEF.map(t => t[0]);
+const ME_TABS = [['recipes', 'My recipes'], ['orders', 'Orders'], ['activity', 'Activity'], ['saved', 'Saved'], ['cooked', 'Cooked']];
+
+/* ---------- words: Hinglish-aware matching ---------- */
+const SYN_MULTI = [['hari mirch', 'green chilli'], ['shimla mirch', 'capsicum'], ['kali mirch', 'black pepper'], ['chai patti', 'tea leaf'], ['lal mirch', 'red chilli']];
+const SYN_ONE = new Map([['pyaaz', 'onion'], ['pyaz', 'onion'], ['kanda', 'onion'], ['tamatar', 'tomato'], ['aloo', 'potato'], ['alu', 'potato'], ['batata', 'potato'], ['adrak', 'ginger'], ['lehsun', 'garlic'], ['lahsun', 'garlic'], ['lasun', 'garlic'], ['dahi', 'curd'], ['yogurt', 'curd'], ['yoghurt', 'curd'], ['doodh', 'milk'], ['chawal', 'rice'], ['anda', 'egg'], ['ande', 'egg'], ['haldi', 'turmeric'], ['jeera', 'cumin'], ['jira', 'cumin'], ['rai', 'mustard'], ['sarson', 'mustard'], ['mirchi', 'chilli'], ['mirch', 'chilli'], ['chili', 'chilli'], ['dhaniya', 'coriander'], ['dhania', 'coriander'], ['pudina', 'mint'], ['makhan', 'butter'], ['makkhan', 'butter'], ['malai', 'cream'], ['cheeni', 'sugar'], ['chini', 'sugar'], ['namak', 'salt'], ['kaju', 'cashew'], ['matar', 'pea'], ['gobhi', 'cauliflower'], ['gobi', 'cauliflower'], ['nimbu', 'lemon'], ['gur', 'jaggery'], ['gud', 'jaggery'], ['elaichi', 'cardamom'], ['laung', 'clove'], ['dalchini', 'cinnamon'], ['saunf', 'fennel'], ['murgh', 'chicken'], ['murg', 'chicken'], ['murgi', 'chicken'], ['biriyani', 'biryani'], ['briyani', 'biryani'], ['pohe', 'poha'], ['panner', 'paneer']]);
+const DESC = new Set(['fresh', 'chopped', 'finely', 'thinly', 'sliced', 'boiled', 'hard', 'medium', 'large', 'small', 'thick', 'grated', 'crushed', 'soaked', 'ripe', 'whole', 'halved', 'cubed', 'slit', 'roughly', 'dry', 'dried', 'raw', 'plus', 'more', 'for', 'the', 'of', 'or', 'a', 'approximately', 'made', 'into', 'some', 'few']);
+const STOP = new Set(['how', 'to', 'make', 'recipe', 'recipes', 'kaise', 'banaye', 'banate', 'banaen', 'banaye', 'bnaye', 'hai', 'ki', 'ka', 'ke', 'the', 'a', 'an', 'with', 'best', 'way', 'ways', 'easy', 'simple', 'quick', 'ghar', 'par', 'pe', 'me', 'mein', 'and', 'aur']);
+const STAPLES = ['salt', 'water', 'sugar', 'oil', 'turmeric', 'red chilli powder', 'kashmiri red chilli powder', 'cumin seed', 'mustard seed', 'hing', 'garam masala', 'ghee'];
+const GENERIC = new Set(['powder', 'seed', 'leaf', 'paste', 'green', 'red', 'masala', 'flour', 'sauce', 'spice', 'water']);
+const normText = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+function sing(w) {
+  if (w.length <= 3) return w;
+  if (w === 'leaves') return 'leaf';
+  if (w === 'halves') return 'half';
+  if (/oes$/.test(w)) return w.slice(0, -2);
+  if (/ies$/.test(w)) return w.slice(0, -3) + 'i';
+  if (/(ss|us|is)$/.test(w)) return w;
+  if (/s$/.test(w)) return w.slice(0, -1);
+  return w;
+}
+function applySyn(words) {
+  let s = ' ' + words.join(' ') + ' ';
+  for (const [a, b] of SYN_MULTI) s = s.split(' ' + a + ' ').join(' ' + b + ' ');
+  return s.trim().split(' ').filter(Boolean).map(w => SYN_ONE.get(w) || w);
+}
+const normPhrase = s => applySyn(normText(s).split(' ').filter(Boolean).map(sing)).join(' ');
+const normIng = s => applySyn(normText(s).split(' ').filter(w => w && !DESC.has(w)).map(sing)).join(' ');
+const STAPLE_KEYS = STAPLES.map(normIng);
+function ingKeys(name) {
+  let s = String(name || '').toLowerCase();
+  const parens = [];
+  s = s.replace(/\(([^)]*)\)/g, (_, p) => { parens.push(p); return ' '; });
+  const keys = [normIng(s.split(',')[0])];
+  for (const p of parens) for (const part of p.split(/,|\bor\b|\band\b/)) {
+    const k = normIng(part);
+    if (k && k.split(' ').length <= 3 && !/\d/.test(k)) keys.push(k);
+  }
+  return keys.filter((k, i, a) => k && a.indexOf(k) === i);
+}
+function termMatch(key, term) {
+  if (!key || !term) return false;
+  if (key === term) return true;
+  const k = ' ' + key + ' ', t = ' ' + term + ' ';
+  return k.includes(t) || t.includes(k);
+}
+const dishKey = d => normPhrase(d);
+function lev(a, b, max) {
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let prev = Array.from({length: b.length + 1}, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i]; let low = i;
+    for (let j = 1; j <= b.length; j++) {
+      const v = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      cur.push(v); if (v < low) low = v;
+    }
+    if (low > max) return max + 1;
+    prev = cur;
+  }
+  return prev[b.length];
+}
+function tokMatch(q, t) {
+  if (t === q) return 1;
+  if (q.length >= 2 && t.startsWith(q)) return 0.8;
+  const max = q.length >= 7 ? 2 : q.length >= 4 ? 1 : 0;
+  return max && lev(q, t, max) <= max ? 0.6 : 0;
+}
+
+/* ---------- quantities ---------- */
+function fmtQty(q, u) {
+  if (!(q > 0)) return '';
+  let s;
+  if (u === 'g' || u === 'ml') s = String(q < 20 ? Math.round(q) : q < 100 ? Math.round(q / 5) * 5 : Math.round(q / 10) * 10);
+  else if (u === 'kg' || u === 'l') s = String(Math.round(q * 100) / 100);
+  else {
+    const step = (u === '' || u === 'cloves' || u === 'pinch' || u === 'inch') ? 0.5 : 0.25;
+    let v = Math.round(q / step) * step; if (v === 0) v = step;
+    const whole = Math.floor(v), frac = v - whole;
+    s = (whole ? String(whole) : '') + (frac === 0.25 ? '¼' : frac === 0.5 ? '½' : frac === 0.75 ? '¾' : '');
+  }
+  const many = q > 1;
+  const unit = u === '' || u === 'to taste' ? '' : u === 'pinch' ? (many ? 'pinches' : 'pinch') : u === 'cup' ? (many ? 'cups' : 'cup') : u === 'cloves' ? (many ? 'cloves' : 'clove') : u;
+  return unit ? s + ' ' + unit : s;
+}
+function ingLine(x, f) {
+  if (x.u === 'to taste' || !(x.q > 0)) return {qty: '', name: x.n + (x.u === 'to taste' ? ', to taste' : '')};
+  return {qty: fmtQty(x.q * f, x.u), name: x.n};
+}
+function parseQty(v) {
+  const s = String(v == null ? '' : v).trim().replace(',', '.');
+  if (!s) return null;
+  const map = {'¼': 0.25, '½': 0.5, '¾': 0.75};
+  let m = s.match(/^(\d+)?\s*([¼½¾])$/);
+  if (m) return (m[1] ? +m[1] : 0) + map[m[2]];
+  m = s.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+  if (m && +m[3]) return +m[1] + m[2] / m[3];
+  m = s.match(/^(\d+)\/(\d+)$/);
+  if (m && +m[2]) return m[1] / m[2];
+  const n = parseFloat(s);
+  return Number.isFinite(n) && n > 0 ? Math.min(n, 100000) : null;
+}
+
+/* ---------- state ---------- */
+function newDraft() {
+  return {dish: '', title: '', cat: 'Main course', level: 'Easy', diet: 'veg', mins: '30', serves: '2', cost: '',
+    ing: [{q: '', u: '', n: ''}, {q: '', u: '', n: ''}, {q: '', u: '', n: ''}], steps: ['', ''], tip: '', aka: '',
+    sellOn: false, sell: {price: '', per: 'plate', area: '', note: ''}, kitOn: false, kit: {price: '', has: ''},
+    photo: null, photoBlob: null, photoPreview: '', cover: {p: Math.floor(Math.random() * PAL.length), t: Math.floor(Math.random() * PATS.length)}, kitchen: '', city: ''};
+}
+const S = {
+  tab: 'home', open: null, status: 'init', slow: false,
+  db: null, user: null, assets: null, me: null, meInfo: null, isOwner: false, canWrite: null, readOnly: false,
+  loaded: {}, def: {}, starters: [], members: {}, kitchens: {}, config: {}, saves: [], names: {},
+  heroQ: '', q: '', mode: 'dish', filters: {}, compare: null, have: [], haveIn: '', assumeStaples: true,
+  feedCat: 'All', feedSort: 'popular', serves: {}, checked: {}, cdraft: {},
+  draft: newDraft(), editing: null, formErr: '', busy: false, pf: null, meTab: 'recipes', lbTab: 'week',
+  modal: null, cook: null, timer: null, welcomeOff: false
+};
+try { S.welcomeOff = localStorage.getItem('fh-welcome-off') === '1'; } catch (e) { /* storage unavailable */ }
+let dataVersion = 0, D = null, derivedAt = -1;
+const exists = {members: false, kitchens: false};
+const serverMine = {members: null, kitchens: null};
+const pending = {members: 0, kitchens: 0, saves: 0};
+const Q = {members: Promise.resolve(), kitchens: Promise.resolve(), saves: Promise.resolve()};
+
+/* ---------- sanitising shared data (it comes from other people) ---------- */
+function offerOf(v, kind) {
+  if (!v || typeof v !== 'object') return null;
+  const price = clampInt(v.price, 0, 100000, 0);
+  if (!price) return null;
+  return kind === 'sell' ? {price, per: str(v.per, 40), area: str(v.area, 60), note: str(v.note, 80)} : {price, has: str(v.has, 100)};
+}
+function sanRecipe(x, sample) {
+  if (!x || typeof x !== 'object' || !RID.test(x.id || '')) return null;
+  const dish = str(x.dish, 60).trim();
+  if (!dish) return null;
+  const ing = arr(x.ing).slice(0, 40).map(i => i && typeof i === 'object' ? {q: Number.isFinite(i.q) && i.q > 0 ? Math.min(i.q, 100000) : null, u: UNITS.includes(i.u) ? i.u : '', n: str(i.n, 80).trim()} : null).filter(i => i && i.n);
+  const o = {
+    id: x.id, dish, title: str(x.title, 80).trim() || 'Home style',
+    cat: CATS.includes(x.cat) ? x.cat : 'Main course', diet: DIETS[x.diet] ? x.diet : 'veg', level: LEVELS_COOK.includes(x.level) ? x.level : 'Easy',
+    mins: clampInt(x.mins, 1, 1440, 30), serves: clampInt(x.serves, 1, 50, 2), cost: clampInt(x.cost, 0, 100000, 0),
+    aka: arr(x.aka).slice(0, 8).map(a => str(a, 30).trim()).filter(Boolean),
+    ing, steps: arr(x.steps).slice(0, 25).map(s => str(s, 600).trim()).filter(Boolean), tip: str(x.tip, 300).trim(),
+    photo: validAsset(x.photo), cover: x.cover && typeof x.cover === 'object' ? {p: clampInt(x.cover.p, 0, PAL.length - 1, 0), t: clampInt(x.cover.t, 0, PATS.length - 1, 0)} : null,
+    sell: offerOf(x.sell, 'sell'), kit: offerOf(x.kit, 'kit'), at: num(x.at), edited: num(x.edited) || 0
+  };
+  if (sample) {
+    const b = x.base && typeof x.base === 'object' ? x.base : {};
+    o.sample = true; o.kitchen = str(x.kitchen, 40).trim() || 'Sample kitchen'; o.city = str(x.city, 40).trim();
+    o.base = {likes: clampInt(b.likes, 0, 1e6, 0), made: clampInt(b.made, 0, 1e6, 0), stars: Math.min(5, Math.max(0, num(b.stars)))};
+  }
+  for (const i of o.ing) {
+    i.ks = ingKeys(i.n); i.k = i.ks[0] || '';
+    i.staple = i.ks.some(k => STAPLE_KEYS.some(s => termMatch(k, s)));
+    i.dw = (i.k.split(' ').find(w => w.length >= 4 && !GENERIC.has(w))) || '';
+  }
+  return o;
+}
+function storeRecipe(r) {
+  const o = {id: r.id, dish: r.dish, title: r.title, cat: r.cat, diet: r.diet, level: r.level, mins: r.mins, serves: r.serves, cost: r.cost,
+    aka: r.aka || [], ing: r.ing.map(i => ({q: i.q, u: i.u, n: i.n})), steps: r.steps, tip: r.tip || '', photo: r.photo || null,
+    cover: r.cover || null, sell: r.sell || null, kit: r.kit || null, at: r.at || now()};
+  if (r.edited) o.edited = r.edited;
+  return o;
+}
+function sanMember(x) {
+  x = x && typeof x === 'object' ? x : {};
+  return {
+    role: x.role === 'cook' || x.role === 'foodie' ? x.role : '', kitchen: str(x.kitchen, 40).trim(), city: str(x.city, 40).trim(), bio: str(x.bio, 160).trim(),
+    likes: arr(x.likes).filter(l => l && RID.test(l.r || '')).map(l => ({r: l.r, at: num(l.at)})),
+    comments: arr(x.comments).filter(c => c && RID.test(c.r || '') && typeof c.t === 'string').map(c => ({id: str(c.id, 40), r: c.r, t: str(c.t, 500), at: num(c.at)})),
+    made: arr(x.made).filter(m => m && RID.test(m.r || '')).map(m => ({r: m.r, s: clampInt(m.s, 1, 5, 5), n: str(m.n, 200), at: num(m.at)})),
+    follows: arr(x.follows).filter(f => f && typeof f.u === 'string' && f.u).map(f => ({u: str(f.u, 200), at: num(f.at)})),
+    orders: arr(x.orders).filter(o => o && RID.test(o.r || '')).map(o => ({id: str(o.id, 40), r: o.r, kind: o.kind === 'kit' ? 'kit' : 'dish', seller: typeof o.seller === 'string' && o.seller ? str(o.seller, 200) : null, qty: clampInt(o.qty, 1, 50, 1), when: str(o.when, 60), note: str(o.note, 300), at: num(o.at)})),
+    status: arr(x.status).filter(s => s && typeof s.o === 'string' && STATUSES.includes(s.s)).map(s => ({o: str(s.o, 40), s: s.s, at: num(s.at)})),
+    boosts: arr(x.boosts).filter(b => b && RID.test(b.r || '')).map(b => ({r: b.r, at: num(b.at), until: num(b.until)}))
+  };
+}
+const sanKitchen = x => ({recipes: arr(x && x.recipes).slice(0, 200).map(r => sanRecipe(r, false)).filter(Boolean)});
+const myMember = () => (S.me && S.members[S.me]) || sanMember({});
+const myKitchen = () => (S.me && S.kitchens[S.me]) || {recipes: []};
+
+/* ---------- people ---------- */
+const personName = uid => (S.names[uid] && S.names[uid].name) || '';
+const displayName = uid => (S.members[uid] && S.members[uid].kitchen) || personName(uid) || (uid === S.me ? 'You' : 'A FoodHub cook');
+const kitchenName = r => r.sample ? r.kitchen : displayName(r.owner);
+function initialAv(name, size, h) {
+  const p = PAL[h % PAL.length];
+  return `<span class="av" style="width:${size}px;height:${size}px;background:${p.bg};color:${p.fg};font-size:${Math.round(size * 0.44)}px" aria-hidden="true">${esc((String(name || '?').trim().charAt(0) || '?').toUpperCase())}</span>`;
+}
+function avatar(uid, size) {
+  const n = S.names[uid];
+  if (n && n.avatarUrl) return `<img class="av" src="${esc(n.avatarUrl)}" width="${size}" height="${size}" style="width:${size}px;height:${size}px" alt="">`;
+  return initialAv(displayName(uid), size, hashStr(uid || ''));
+}
+function resolveNames() {
+  if (!S.user || typeof S.user.profiles !== 'function') return;
+  const ids = new Set([...Object.keys(S.members), ...Object.keys(S.kitchens)]);
+  if (S.me) ids.add(S.me);
+  if (!ids.size) return;
+  Promise.resolve(S.user.profiles([...ids])).then(ps => {
+    let changed = false;
+    for (const id of ids) {
+      const p = ps && ps[id];
+      if (!p) continue;
+      const cur = S.names[id];
+      if (!cur || cur.name !== (p.name || '') || cur.avatarUrl !== (p.avatarUrl || '')) { S.names[id] = {name: p.name || '', avatarUrl: p.avatarUrl || ''}; changed = true; }
+    }
+    if (changed) { dataVersion++; scheduleRender(); }
+  }).catch(() => {});
+}
+
+/* ---------- derived data ---------- */
+function derive() {
+  if (D && derivedAt === dataVersion) return D;
+  const t = now();
+  const raw = [];
+  if (!S.config.hideSamples) for (const s of S.starters) raw.push({...s, owner: null});
+  for (const [uid, k] of Object.entries(S.kitchens)) {
+    const m = S.members[uid];
+    for (const r of k.recipes) raw.push({...r, owner: uid, city: (m && m.city) || ''});
+  }
+  const byId = new Map(), all = [];
+  for (const r of raw) if (!byId.has(r.id)) { byId.set(r.id, r); all.push(r); }
+  const L = new Map(), C = new Map(), M = new Map(), O = new Map(), followers = new Map();
+  const push = (map, k, v) => { const a = map.get(k); if (a) a.push(v); else map.set(k, [v]); };
+  for (const [uid, m] of Object.entries(S.members)) {
+    const seenL = new Set(), seenM = new Set();
+    for (const l of m.likes) if (byId.has(l.r) && !seenL.has(l.r)) { seenL.add(l.r); push(L, l.r, {u: uid, at: l.at}); }
+    for (const c of m.comments) if (byId.has(c.r)) push(C, c.r, {u: uid, id: c.id, t: c.t, at: c.at});
+    for (const x of m.made) if (byId.has(x.r) && !seenM.has(x.r)) { seenM.add(x.r); push(M, x.r, {u: uid, s: x.s, n: x.n, at: x.at}); }
+    for (const o of m.orders) { const r = byId.get(o.r); if (r && (o.seller || null) === (r.owner || null)) push(O, o.r, {...o, u: uid}); }
+    const seenF = new Set();
+    for (const f of m.follows) if (f.u !== uid && !seenF.has(f.u)) { seenF.add(f.u); push(followers, f.u, {u: uid, at: f.at}); }
+  }
+  for (const r of all) {
+    const b = r.base || {likes: 0, made: 0, stars: 0};
+    const Lr = L.get(r.id) || [], Cr = C.get(r.id) || [], Mr = M.get(r.id) || [], Or = O.get(r.id) || [];
+    const rated = b.made + Mr.length;
+    const stars = rated ? (b.stars * b.made + Mr.reduce((a, x) => a + x.s, 0)) / rated : 0;
+    r.st = {likes: b.likes + Lr.length, comments: Cr.length, made: b.made + Mr.length, stars, rated, L: Lr, C: Cr, M: Mr, O: Or};
+    r.score = r.st.likes + 2 * r.st.comments + 5 * r.st.made + (rated >= 3 ? Math.round((stars - 3) * 20) : 0);
+    r.wins = [];
+    const kn = r.sample ? r.kitchen : ((S.members[r.owner] && S.members[r.owner].kitchen) || '');
+    r.ix = {dish: normPhrase(r.dish).split(' '), aka: normPhrase(r.aka.join(' ')).split(' ').filter(Boolean), title: normPhrase(r.title).split(' '),
+      cat: normPhrase(r.cat).split(' '), kitchen: normPhrase(kn).split(' ').filter(Boolean), ing: [...new Set(r.ing.flatMap(i => i.ks.join(' ').split(' ')))].filter(Boolean)};
+    r.dk = dishKey(r.dish);
+  }
+  const groups = new Map();
+  for (const r of all) { let g = groups.get(r.dk); if (!g) { g = {key: r.dk, dish: r.dish, items: []}; groups.set(r.dk, g); } g.items.push(r); }
+  for (const g of groups.values()) {
+    g.items.sort((a, b) => b.score - a.score || (a.at || 0) - (b.at || 0));
+    g.items.forEach((r, i) => { r.rank = i + 1; r.ways = g.items.length; });
+    g.score = g.items.reduce((a, r) => a + r.score, 0);
+    g.dish = g.items[0].dish;
+    if (g.items.length > 1) {
+      const win = (label, val, better, ok = () => true) => {
+        const c = g.items.filter(ok); if (c.length < 2) return;
+        const best = c.reduce((a, r) => better(val(r), val(a)) ? r : a, c[0]);
+        if (c.filter(r => val(r) === val(best)).length === 1) best.wins.push(label);
+      };
+      win('Most made', r => r.st.made, (x, y) => x > y, r => r.st.made > 0);
+      win('Top rated', r => Math.round(r.st.stars * 10), (x, y) => x > y, r => r.st.rated >= 3);
+      win('Quickest', r => r.mins, (x, y) => x < y);
+      win('Most loved', r => r.st.likes, (x, y) => x > y, r => r.st.likes > 0);
+      win('Cheapest', r => Math.round(r.cost / r.serves), (x, y) => x < y, r => r.cost > 0);
+    }
+  }
+  const boosts = [];
+  for (const [uid, m] of Object.entries(S.members)) for (const b of m.boosts) { const r = byId.get(b.r); if (r && r.owner === uid && b.until > t && !boosts.some(x => x.r === b.r)) boosts.push({...b, u: uid}); }
+  D = {all, byId, groups, followers, boosts};
+  derivedAt = dataVersion;
+  return D;
+}
+function statusOf(o) {
+  if (!o.seller) return 'demo';
+  const sm = S.members[o.seller];
+  let best = null;
+  for (const s of (sm ? sm.status : [])) if (s.o === o.id && (!best || s.at >= best.at)) best = s;
+  return best ? best.s : 'sent';
+}
+function pointsFor(uid, since = 0) {
+  const d = derive();
+  const p = {post: 0, likeIn: 0, commentIn: 0, madeIn: 0, orderIn: 0, follower: 0, madeOut: 0, commentOut: 0};
+  for (const r of d.all) {
+    if (r.owner !== uid) continue;
+    if ((r.at || 0) >= since) p.post += PTS.post;
+    for (const l of r.st.L) if (l.u !== uid && l.at >= since) p.likeIn += PTS.likeIn;
+    for (const c of r.st.C) if (c.u !== uid && c.at >= since) p.commentIn += PTS.commentIn;
+    for (const m of r.st.M) if (m.u !== uid && m.at >= since) p.madeIn += PTS.madeIn;
+    for (const o of r.st.O) if (o.u !== uid && o.at >= since && statusOf(o) !== 'declined') p.orderIn += PTS.orderIn;
+  }
+  for (const f of (d.followers.get(uid) || [])) if (f.at >= since) p.follower += PTS.follower;
+  const m = S.members[uid];
+  if (m) {
+    const seenM = new Set();
+    for (const x of m.made) { const r = d.byId.get(x.r); if (r && r.owner !== uid && !seenM.has(x.r)) { seenM.add(x.r); if (x.at >= since) p.madeOut += PTS.madeOut; } }
+    const seenC = new Set();
+    for (const c of m.comments) { const r = d.byId.get(c.r); if (r && r.owner !== uid && !seenC.has(c.r)) { seenC.add(c.r); if (c.at >= since) p.commentOut += PTS.commentOut; } }
+  }
+  const total = Object.values(p).reduce((a, b) => a + b, 0);
+  const spent = since ? 0 : (m ? m.boosts.length * BOOST.cost : 0);
+  return {total, spent, balance: Math.max(0, total - spent), p};
+}
+function levelOf(total) {
+  let i = 0;
+  for (let j = 0; j < LEVELS.length; j++) if (total >= LEVELS[j].min) i = j;
+  const cur = LEVELS[i], next = LEVELS[i + 1] || null;
+  const pct = next ? Math.round((total - cur.min) / (next.min - cur.min) * 100) : 100;
+  return {cur, next, pct};
+}
+const isLiked = id => myMember().likes.some(l => l.r === id);
+const isFollowing = uid => myMember().follows.some(f => f.u === uid);
+const myMadeOf = id => myMember().made.find(m => m.r === id);
+
+/* ---------- search ---------- */
+function searchScore(r, toks, qn) {
+  const W = {dish: 6, aka: 5, title: 3, cat: 2, kitchen: 2, ing: 1};
+  let total = 0;
+  for (const q of toks) {
+    let best = 0;
+    for (const f in W) for (const t of r.ix[f]) { const m = tokMatch(q, t) * W[f]; if (m > best) best = m; }
+    if (!best) return 0;
+    total += best;
+  }
+  if ((' ' + r.ix.dish.join(' ') + ' ').includes(' ' + qn + ' ')) total += 10;
+  return total;
+}
+const passFilters = r => (!S.filters.veg || r.diet === 'veg') && (!S.filters.quick || r.mins <= 30) && (!S.filters.easy || r.level === 'Easy') && (!S.filters.order || r.sell || r.kit);
+
+/* ---------- building blocks ---------- */
+const dietMark = d => `<span class="diet ${DIETS[d] ? d : 'veg'}" role="img" aria-label="${DIETS[d] || 'Veg'}"></span>`;
+function coverOf(r) {
+  const h = hashStr(r.id || r.dish || 'x');
+  const c = r.cover;
+  return {p: PAL[c && PAL[c.p] ? c.p : h % PAL.length], t: PATS[c && PATS[c.t] ? c.t : (h >>> 7) % PATS.length]};
+}
+function cover(r, size) {
+  const {p, t} = coverOf(r);
+  const style = `--bg-c:${p.bg};--fg-c:${p.fg};--pc:${p.pc}`;
+  const photo = validAsset(r.photo);
+  const img = photo ? `<img src="/_blob/${photo}" alt="${esc(r.dish)}: ${esc(r.title)}" loading="lazy" data-fb="1">` : '';
+  if (size === 'thumb') return `<div class="cover thumb pat-${t}" style="${style}"><span class="thumb-l">${esc((r.dish || '?').trim().charAt(0).toUpperCase())}</span>${img}</div>`;
+  const sticker = r.sell ? `<span class="sticker" aria-label="Order for ${inr(r.sell.price)}">Order<b>${inr(r.sell.price)}</b></span>` : '';
+  const ribbon = r.rank === 1 && r.ways > 1 ? `<span class="ribbon">${ic('crown', 13)} Best way</span>` : '';
+  return `<div class="cover ${size} pat-${t}${photo ? ' photo' : ''}" style="${style}">${img}<div class="cover-frame" aria-hidden="${photo ? 'true' : 'false'}"><span class="cover-kicker">${esc(kitchenName(r))}</span><span class="cover-dish">${esc(r.dish)}</span><span class="cover-sub">${esc(r.title)}</span></div>${ribbon}${sticker}</div>`;
+}
+function card(r, o = {}) {
+  const liked = isLiked(r.id);
+  return `<article class="rcard" role="button" tabindex="0" data-act="open" data-id="${esc(r.id)}" aria-label="${esc(r.dish)}, ${esc(r.title)}">
+    ${cover(r, 'card')}
+    <div class="rcard-body">
+      <div class="rcard-dish">${dietMark(r.diet)}<span>${esc(r.dish)}</span></div>
+      <div class="rcard-title">${esc(r.title)}</div>
+      <div class="rcard-by">${esc(kitchenName(r))}${r.sample && !r.preview ? ' <span class="tag">Sample</span>' : ''}${o.promo ? ' <span class="tag tag-promo">Promoted</span>' : ''}${o.fresh ? ' <span class="tag">New</span>' : ''}</div>
+      <div class="rcard-meta">${ic('clock', 13)}<span>${r.mins} min</span><span aria-hidden="true">·</span><span>${esc(r.level)}</span></div>
+      <div class="rcard-eng">
+        <button class="eng${liked ? ' on' : ''}" data-act="like" data-id="${esc(r.id)}" aria-pressed="${liked}" aria-label="Like, ${r.st.likes} likes">${ic('heart', 16, liked)}<span>${fmtNum(r.st.likes)}</span></button>
+        <span class="eng" title="People who made it">${ic('pot', 16)}<span>${fmtNum(r.st.made)}</span><span class="sr"> made it</span></span>
+        ${r.st.rated ? `<span class="eng">${ic('star', 14, true)}<span>${r.st.stars.toFixed(1)}</span></span>` : ''}
+      </div>
+    </div>
+  </article>`;
+}
+const emptyBox = (h, p, btn = '') => `<div class="empty"><h3>${h}</h3><p>${p}</p>${btn}</div>`;
+const skeletonGrid = () => `<div class="grid" aria-busy="true" aria-label="Loading recipes">${'<div class="rcard"><div class="skel" style="aspect-ratio:4/3;border-radius:0"></div><div class="rcard-body"><div class="skel" style="height:12px;width:60%"></div><div class="skel" style="height:15px;width:85%;margin-top:6px"></div><div class="skel" style="height:12px;width:45%;margin-top:6px"></div></div></div>'.repeat(4)}</div>`;
+function withTimers(text) {
+  return text.replace(/(\d+(?:\.\d+)?)(?:\s*(?:–|-|to)\s*(\d+))?\s*(minutes?|mins?|hours?|hrs?)\b/gi, (m, a, b, unit) => {
+    const secs = Math.round(parseFloat(a) * (/^h/i.test(unit) ? 3600 : 60));
+    if (!secs || secs > 6 * 3600) return m;
+    return `<button type="button" class="tchip" data-act="timer" data-s="${secs}" data-l="${esc(m)}" aria-label="Start a ${esc(m)} timer">${ic('clock', 13)}${m}</button>`;
+  });
+}
+function stepIngs(r, text) {
+  const t = ' ' + normText(text).split(' ').map(sing).join(' ') + ' ';
+  return r.ing.filter(x => x.ks.some(k => t.includes(' ' + k + ' ')) || (x.dw && t.includes(' ' + x.dw + ' ')));
+}
+function waLink(r) {
+  const lines = [`*${r.dish}*: ${r.title}`, `by ${kitchenName(r)} on FoodHub`, `${r.mins} min · serves ${r.serves} · ${r.level}`, '', 'Ingredients:'];
+  for (const x of r.ing) { const L = ingLine(x, 1); lines.push(`• ${L.qty ? L.qty + ' ' : ''}${L.name}`); }
+  lines.push('', 'Method:');
+  r.steps.slice(0, 8).forEach((s, i) => lines.push(`${i + 1}. ${s}`));
+  if (r.steps.length > 8) lines.push('…full method on FoodHub');
+  if (r.sell) lines.push('', `Order it: ${inr(r.sell.price)} / ${r.sell.per || 'plate'}${r.sell.area ? ', ' + r.sell.area : ''}`);
+  return 'https://wa.me/?text=' + encodeURIComponent(lines.join('\n').slice(0, 3500));
+}
+
+/* ---------- views ---------- */
+function vNoData() {
+  if (S.status === 'init') return `<section class="hero"><h1 class="hero-q">Aaj kya banana hai?</h1><p class="hero-sub">Loading the hub…</p></section><section class="sec">${skeletonGrid()}</section>`;
+  return emptyBox('The hub can’t load here', 'Open this page on claude.ai while signed in to see recipes and join in.');
+}
+function welcomeCard() {
+  const m = S.me && S.members[S.me];
+  if (!S.me || S.readOnly || !S.def.members || (m && m.role) || S.welcomeOff) return '';
+  return `<section class="welcome" aria-label="Welcome">
+    <div class="row-between"><h2 class="h2">Welcome to FoodHub</h2><button class="icon-btn sm" data-act="welcome-off" aria-label="Dismiss">${ic('close', 18)}</button></div>
+    <p class="lead">What brings you here? You can switch any time.</p>
+    <div class="role-btns">
+      <button class="role" data-act="role" data-v="cook"><b>I cook</b><span>Share recipes, sell dishes and kits, earn Tadka</span></button>
+      <button class="role" data-act="role" data-v="foodie"><b>I’m hungry</b><span>Find the best way to make anything</span></button>
+    </div>
+  </section>`;
+}
+function vHome() {
+  if (S.status !== 'loading') return vNoData();
+  const d = derive();
+  const loading = !(S.loaded.starter && S.loaded.kitchens);
+  const groups = [...d.groups.values()].sort((a, b) => b.score - a.score).slice(0, 10);
+  const follows = new Set(myMember().follows.map(f => f.u));
+  const cats = ['All', ...(follows.size ? ['Following'] : []), ...CATS];
+  if (!cats.includes(S.feedCat)) S.feedCat = 'All';
+  const t = now();
+  const trend = r => (r.score + 8) / Math.pow((t - (r.at || 0)) / 3600000 + 24, 0.4);
+  const list = d.all.filter(r => S.feedCat === 'All' || (S.feedCat === 'Following' ? follows.has(r.owner) : r.cat === S.feedCat));
+  list.sort(S.feedSort === 'new' ? (a, b) => (b.at || 0) - (a.at || 0) : (a, b) => trend(b) - trend(a));
+  const promo = d.boosts.map(b => d.byId.get(b.r)).filter(Boolean);
+  const promoIds = new Set(promo.map(r => r.id));
+  const fresh = d.all.filter(r => !r.sample && !promoIds.has(r.id) && t - (r.at || 0) < 3 * DAY).sort((a, b) => b.at - a.at).slice(0, 8);
+  return `${welcomeCard()}
+  <section class="hero">
+    <h1 class="hero-q">Aaj kya banana hai?</h1>
+    <p class="hero-sub">Search any dish and see every way people cook it, ranked by the ones who actually made it.</p>
+    <form class="searchbar" data-form="hero" role="search">
+      ${ic('search', 20)}
+      <input id="hero-q" type="search" placeholder="Biryani, poha, paneer…" autocomplete="off" enterkeyhint="search" value="${esc(S.heroQ)}" data-bind="heroQ" aria-label="Search for a dish">
+      <button class="btn btn-primary btn-sm" type="submit">Search</button>
+    </form>
+    ${groups.length ? `<div class="chips scroll-x" aria-label="Popular dishes">${groups.map(g => `<button class="chip" data-act="find" data-q="${esc(g.dish)}">${esc(g.dish)}<span class="chip-n">${g.items.length} ${plural(g.items.length, 'way')}</span></button>`).join('')}</div>` : ''}
+  </section>
+  ${promo.length ? `<section class="sec"><div class="sec-title"><h2 class="h2">Promoted by cooks</h2><span class="hint">Paid with Tadka points</span></div><div class="promo">${promo.map(r => card(r, {promo: true})).join('')}</div></section>` : ''}
+  ${fresh.length ? `<section class="sec"><div class="sec-title"><h2 class="h2">Just posted</h2></div><div class="promo">${fresh.map(r => card(r, {fresh: true})).join('')}</div></section>` : ''}
+  <section class="sec">
+    <div class="sec-title"><h2 class="h2">From the kitchens</h2>
+      <div class="seg" role="group" aria-label="Sort recipes">${[['popular', 'Popular'], ['new', 'New']].map(([v, l]) => `<button aria-pressed="${S.feedSort === v}" data-act="feed-sort" data-v="${v}">${l}</button>`).join('')}</div>
+    </div>
+    <div class="chips scroll-x" role="group" aria-label="Category">${cats.map(c => `<button class="chip" aria-pressed="${S.feedCat === c}" data-act="feed-cat" data-v="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+    ${loading ? skeletonGrid() : list.length ? `<div class="grid">${list.map(r => card(r)).join('')}</div>`
+      : emptyBox(S.feedCat === 'Following' ? 'Nothing from kitchens you follow yet' : `No ${esc(S.feedCat === 'All' ? '' : S.feedCat.toLowerCase() + ' ')}recipes yet`, 'Be the first to share one. The first recipe for a dish starts as its best way.', `<button class="btn btn-primary" data-act="tab" data-tab="post">${ic('plus', 16)} Share a recipe</button>`)}
+  </section>`;
+}
+
+function vSearch() {
+  if (S.status !== 'loading') return vNoData();
+  const dishMode = S.mode === 'dish';
+  return `<section class="pad stack">
+    <h1 class="h1">Find the best way to make it</h1>
+    <div class="seg seg-wide" role="group" aria-label="Search by">
+      <button aria-pressed="${dishMode}" data-act="mode" data-v="dish">By dish</button>
+      <button aria-pressed="${!dishMode}" data-act="mode" data-v="ing">By what’s in my kitchen</button>
+    </div>
+    ${dishMode ? `
+    <form class="searchbar" data-form="search" role="search">${ic('search', 20)}
+      <input id="q" type="search" placeholder="Search a dish: biryani, poha, dal…" autocomplete="off" enterkeyhint="search" value="${esc(S.q)}" data-bind="q" data-live="results" aria-label="Search for a dish">
+    </form>
+    <div class="chips" role="group" aria-label="Filters">${FILTERS.map(f => `<button class="chip chip-sm" aria-pressed="${!!S.filters[f.k]}" data-act="filter" data-v="${f.k}">${f.label}</button>`).join('')}</div>
+    <div id="results" class="results">${dishResults()}</div>` : `
+    <form class="searchbar" data-form="have">${ic('plus', 20)}
+      <input id="have-in" type="text" placeholder="Add: paneer, tamatar, pyaaz…" autocomplete="off" enterkeyhint="done" value="${esc(S.haveIn)}" data-bind="haveIn" list="ing-list" aria-label="Add an ingredient you have">
+      <button class="btn btn-primary btn-sm" type="submit">Add</button>
+    </form>
+    <datalist id="ing-list">${ingSuggestions().map(n => `<option value="${esc(n)}"></option>`).join('')}</datalist>
+    ${S.have.length ? `<div class="chips">${S.have.map((h, i) => `<button class="chip chip-x" aria-pressed="true" data-act="have-rm" data-i="${i}" aria-label="Remove ${esc(h)}">${esc(h)} ${ic('close', 14)}</button>`).join('')}<button class="link small" data-act="have-clear">Clear all</button></div>` : ''}
+    <div class="chips"><span class="hint">Quick add:</span>${quickAdd().map(n => `<button class="chip chip-sm" data-act="have-add" data-v="${esc(n)}">+ ${esc(n)}</button>`).join('')}</div>
+    <label class="toggle"><input type="checkbox" id="staples" data-check="assumeStaples" ${S.assumeStaples ? 'checked' : ''}> <span>I have the basics: salt, oil, sugar, haldi, jeera, mirchi powder</span></label>
+    <div id="ing-results" class="results">${ingResults()}</div>`}
+  </section>`;
+}
+function dishResults() {
+  const d = derive();
+  if (!(S.loaded.starter && S.loaded.kitchens)) return `<div class="skel" style="height:120px;margin-top:12px"></div>`;
+  const qn = normPhrase(S.q);
+  const toks = qn ? qn.split(' ').filter(w => w && !STOP.has(w)) : [];
+  if (!toks.length) {
+    const gs = [...d.groups.values()].map(g => ({...g, items: g.items.filter(passFilters)})).filter(g => g.items.length).sort((a, b) => b.score - a.score);
+    if (!gs.length) return emptyBox('Nothing matches these filters', 'Turn a filter off to see more.');
+    return `<p class="hint" style="margin-top:4px">${gs.length} ${plural(gs.length, 'dish', 'dishes')} on FoodHub. Every way of making a dish is ranked by likes, ratings and how many people cooked it.</p>${gs.map(groupBlock).join('')}`;
+  }
+  const rel = new Map();
+  for (const r of d.all) { if (!passFilters(r)) continue; const s = searchScore(r, toks, toks.join(' ')); if (s > 0) rel.set(r.dk, Math.max(rel.get(r.dk) || 0, s)); }
+  if (!rel.size) {
+    const label = clean(S.q, 60);
+    return emptyBox(`No one has shared “${esc(label)}” yet`, 'Be the first. Your recipe becomes the best way until someone beats it.', `<button class="btn btn-primary" data-act="post-dish" data-q="${esc(label)}">${ic('plus', 16)} Share your recipe</button>`);
+  }
+  const gs = [...rel.entries()].map(([k, s]) => { const g = d.groups.get(k); return {...g, items: g.items.filter(passFilters), rel: s}; }).sort((a, b) => b.rel - a.rel || b.score - a.score);
+  return gs.map(groupBlock).join('');
+}
+function groupBlock(g) {
+  const made = g.items.reduce((a, r) => a + r.st.made, 0);
+  const open = S.compare === g.key;
+  return `<section class="group" aria-label="${esc(g.dish)}">
+    <header class="group-head"><h2 class="group-dish">${esc(g.dish)}</h2><span class="group-n">${g.items.length} ${plural(g.items.length, 'way')} · ${fmtNum(made)} made it</span></header>
+    <ol class="ways">${g.items.map(wayRow).join('')}</ol>
+    <div class="group-foot">
+      ${g.items.length > 1 ? `<button class="btn btn-sm" data-act="compare" data-k="${esc(g.key)}" aria-expanded="${open}">${open ? 'Hide comparison' : `Compare the ${g.items.length} ways`}</button>` : ''}
+      <button class="btn btn-sm" data-act="post-dish" data-q="${esc(g.dish)}">${ic('plus', 15)} Add your way</button>
+    </div>
+    ${open ? compareTable(g) : ''}
+  </section>`;
+}
+function wayRow(r) {
+  const best = r.rank === 1 && r.ways > 1;
+  return `<li class="way${best ? ' best' : ''}" role="button" tabindex="0" data-act="open" data-id="${esc(r.id)}">
+    <span class="way-rank" aria-label="Rank ${r.rank}">${r.rank}</span>
+    <div class="way-main">
+      ${best ? `<span class="best-tag">${ic('crown', 12)} Best way</span>` : ''}
+      <div class="way-title">${dietMark(r.diet)}<span>${esc(r.title)}</span></div>
+      <div class="way-by">${esc(kitchenName(r))}${r.city ? ' · ' + esc(r.city) : ''}${r.sample ? ' <span class="tag">Sample</span>' : ''}</div>
+      <div class="way-meta">${r.mins} min · ${esc(r.level)}${r.cost ? ` · ${inr(r.cost / r.serves)}/serving` : ''}${r.sell ? ` · <b>Order ${inr(r.sell.price)}</b>` : r.kit ? ` · <b>Kit ${inr(r.kit.price)}</b>` : ''}</div>
+      ${r.wins.length ? `<div>${r.wins.map(w => `<span class="why">${esc(w)}</span>`).join('')}</div>` : ''}
+    </div>
+    <div class="way-score">${r.st.rated ? `<b>${r.st.stars.toFixed(1)}★</b>` : '<b>New</b>'}${fmtNum(r.st.made)} made</div>
+  </li>`;
+}
+function compareTable(g) {
+  const items = g.items;
+  const sets = items.map(r => new Set(r.ing.map(x => x.k)));
+  const only = items.map((r, i) => r.ing.filter(x => !x.staple && sets.every((s, j) => j === i || !s.has(x.k))).map(x => x.k).slice(0, 4));
+  const rows = [
+    ['Kitchen', r => esc(kitchenName(r))],
+    ['Time', r => `${r.mins} min`],
+    ['Level', r => esc(r.level)],
+    ['Cost', r => r.cost ? `${inr(r.cost / r.serves)} / serving` : '–'],
+    ['Rating', r => r.st.rated ? `${r.st.stars.toFixed(1)}★ (${fmtNum(r.st.rated)})` : '–'],
+    ['Made it', r => fmtNum(r.st.made)],
+    ['Ingredients', r => String(r.ing.length)],
+    ['Only in this way', (r, i) => only[i].length ? esc(only[i].join(', ')) : '–']
+  ];
+  return `<div class="cmp-wrap"><table class="cmp"><thead><tr><th scope="col"><span class="sr">Detail</span></th>${items.map(r => `<th scope="col">${r.rank}. ${esc(r.title)}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map(([label, f]) => `<tr><th scope="row">${label}</th>${items.map((r, i) => `<td>${f(r, i)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+function ingSuggestions() {
+  const c = new Map();
+  for (const r of derive().all) for (const x of r.ing) if (!x.staple && x.k) c.set(x.k, (c.get(x.k) || 0) + 1);
+  return [...c.entries()].sort((a, b) => b[1] - a[1]).slice(0, 60).map(e => e[0]);
+}
+function quickAdd() {
+  const have = new Set(S.have.map(normIng));
+  return ['paneer', 'tomato', 'onion', 'potato', 'rice', 'egg', 'chicken', 'curd', 'milk', 'poha', 'besan', 'butter'].filter(n => !have.has(n)).slice(0, 8);
+}
+function ingResults() {
+  if (!S.have.length) return emptyBox('What’s in your kitchen?', 'Add 2 or 3 things from your fridge. We’ll show what you can cook and what’s missing.');
+  const have = S.have.map(normIng).filter(Boolean);
+  const rows = [];
+  for (const r of derive().all) {
+    const need = r.ing.filter(x => !(S.assumeStaples && x.staple));
+    if (!need.length) continue;
+    let got = 0; const miss = [];
+    for (const x of need) { if (x.ks.some(k => have.some(h => termMatch(k, h)))) got++; else miss.push(x.k); }
+    if (got) rows.push({r, got, total: need.length, miss});
+  }
+  rows.sort((a, b) => (a.miss.length - b.miss.length) || (b.got / b.total - a.got / a.total) || (b.r.score - a.r.score));
+  if (!rows.length) return emptyBox('No matches yet', 'None of the recipes use those. Try adding a few more basics like onion or tomato.');
+  return `<ul class="list">${rows.slice(0, 30).map(({r, got, total, miss}) => `<li class="list-row"><div class="lr-hit" role="button" tabindex="0" data-act="open" data-id="${esc(r.id)}">
+    ${cover(r, 'thumb')}
+    <div class="lr-main">
+      <div class="lr-title">${dietMark(r.diet)} ${esc(r.dish)}</div>
+      <div class="lr-sub">${esc(r.title)} · ${esc(kitchenName(r))}</div>
+      <div class="match"><span class="match-bar"><span style="width:${Math.round(got / total * 100)}%"></span></span><span class="match-t">${miss.length ? `Need ${miss.length}: ${esc(miss.slice(0, 4).join(', '))}${miss.length > 4 ? '…' : ''}` : 'You have everything'}</span></div>
+    </div>
+    <span class="lr-pct num" aria-label="${got} of ${total} ingredients">${got}/${total}</span></div></li>`).join('')}</ul>`;
+}
+
+function vDetail(id) {
+  const d = derive();
+  const r = d.byId.get(id);
+  const bar = (title, extra = '') => `<div class="sheet-bar"><button class="icon-btn" data-act="close" aria-label="Back">${ic('back')}</button><span class="sheet-title">${title}</span>${extra}</div>`;
+  if (!r) {
+    const loading = S.status === 'init' || !(S.loaded.starter && S.loaded.kitchens);
+    return `<div class="sheet" role="dialog" aria-modal="true" aria-label="Recipe">${bar('Recipe')}<div class="sheet-body">${loading ? '<div class="pad"><div class="skel" style="aspect-ratio:16/10"></div></div>' : emptyBox('This recipe isn’t here any more', 'The cook may have removed it.', '<button class="btn" data-act="close">Back</button>')}</div></div>`;
+  }
+  const serves = S.serves[id] || r.serves;
+  const f = serves / r.serves;
+  const liked = isLiked(id), saved = S.saves.includes(id);
+  const mine = !!r.owner && r.owner === S.me;
+  const kn = kitchenName(r);
+  const checked = S.checked[id] || [];
+  const toBuy = r.ing.filter((x, i) => !checked.includes(i) && !x.staple).length;
+  const comments = [...r.st.C].sort((a, b) => b.at - a.at);
+  const others = (d.groups.get(r.dk) || {items: []}).items.filter(x => x.id !== id);
+  const follows = r.owner && isFollowing(r.owner);
+  const sub = r.sample ? `${r.city ? esc(r.city) + ' · ' : ''}Sample kitchen` : [r.city && esc(r.city), (S.members[r.owner] && S.members[r.owner].kitchen && personName(r.owner)) ? esc(personName(r.owner)) : '', 'posted ' + ago(r.at)].filter(Boolean).join(' · ');
+  return `<div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(r.dish)}">
+  ${bar(esc(r.dish), `<button class="icon-btn${saved ? ' on' : ''}" data-act="save" data-id="${esc(id)}" aria-pressed="${saved}" aria-label="${saved ? 'Saved' : 'Save recipe'}">${ic('bookmark', 20, saved)}</button><a class="icon-btn" href="${waLink(r)}" target="_blank" rel="noopener noreferrer" aria-label="Send on WhatsApp">${ic('share')}</a>`)}
+  <div class="sheet-body" id="sheet-body">
+    <div class="d-cover">${cover(r, 'detail')}</div>
+    <div class="d-head">
+      ${r.ways > 1 ? (r.rank === 1 ? `<span class="bestline">${ic('crown', 15)} Best way to make ${esc(r.dish)} · #1 of ${r.ways}</span>` : `<span class="rankline">Ranked #${r.rank} of ${r.ways} ways · <button class="link" data-act="find" data-q="${esc(r.dish)}">See all</button></span>`) : ''}
+      <h1 class="d-dish">${esc(r.dish)}</h1>
+      <p class="d-title">${esc(r.title)}</p>
+      <div class="byline">
+        ${r.sample ? initialAv(kn, 40, hashStr(kn)) : avatar(r.owner, 40)}
+        <div class="who"><b>${esc(kn)}</b><span>${sub}</span></div>
+        ${r.owner && !mine ? `<button class="btn btn-sm${follows ? '' : ' btn-ink'}" data-act="follow" data-u="${esc(r.owner)}" aria-pressed="${!!follows}">${follows ? 'Following' : 'Follow'}</button>` : ''}
+        ${mine ? `<button class="btn btn-sm" data-act="edit-recipe" data-id="${esc(id)}">${ic('edit', 15)} Edit</button>` : ''}
+      </div>
+    </div>
+    <div class="d-stats">
+      <div><span class="k">Time</span><span class="v">${r.mins} min</span></div>
+      <div><span class="k">Level</span><span class="v">${esc(r.level)}</span></div>
+      <div><span class="k">Diet</span><span class="v">${dietMark(r.diet)} ${DIETS[r.diet]}</span></div>
+      <div><span class="k">Cost</span><span class="v">${r.cost ? `${inr(r.cost / r.serves)}<small>/serving</small>` : '–'}</span></div>
+    </div>
+    <div class="d-eng">
+      <button class="pill${liked ? ' on' : ''}" data-act="like" data-id="${esc(id)}" aria-pressed="${liked}">${ic('heart', 17, liked)} ${fmtNum(r.st.likes)}<span class="sr"> likes</span></button>
+      <button class="pill" data-act="to-comments">${ic('chat', 17)} ${r.st.comments}<span class="sr"> comments</span></button>
+      <span class="pill pill-static">${ic('pot', 17)} ${fmtNum(r.st.made)} made it</span>
+      ${r.st.rated ? `<span class="pill pill-static">${ic('star', 15, true)} ${r.st.stars.toFixed(1)} <small>(${fmtNum(r.st.rated)})</small></span>` : ''}
+    </div>
+    ${marketBox(r, mine)}
+    <section class="d-sec" aria-label="Ingredients">
+      <div class="sec-head"><h2 class="h2">Ingredients</h2>
+        <div class="stepper" role="group" aria-label="Servings"><button data-act="serves" data-id="${esc(id)}" data-d="-1" aria-label="Fewer servings">${ic('minus', 16)}</button><span class="num">${serves} ${plural(serves, 'serving')}</span><button data-act="serves" data-id="${esc(id)}" data-d="1" aria-label="More servings">${ic('plus', 16)}</button></div>
+      </div>
+      <p class="hint">Tap what you already have.${f !== 1 ? ` Quantities scaled for ${serves}.` : ''}</p>
+      <ul class="ing">${r.ing.map((x, i) => { const L = ingLine(x, f); const on = checked.includes(i); return `<li><button class="ing-row${on ? ' on' : ''}" data-act="check" data-id="${esc(id)}" data-i="${i}" aria-pressed="${on}"><span class="box">${on ? ic('check', 14) : ''}</span><span class="qty">${esc(L.qty)}</span><span class="nm">${esc(L.name)}</span></button></li>`; }).join('')}</ul>
+      <div class="ing-foot"><span>${toBuy ? `${toBuy} ${plural(toBuy, 'thing')} to buy (basics not counted)` : 'You have everything you need'}</span>${toBuy ? `<button class="btn btn-sm" data-act="copy-list" data-id="${esc(id)}">${ic('copy', 15)} Copy shopping list</button>` : ''}</div>
+    </section>
+    <section class="d-sec" aria-label="Method">
+      <div class="sec-head"><h2 class="h2">Method</h2><button class="btn btn-primary btn-sm" data-act="cook" data-id="${esc(id)}">${ic('play', 13, true)} Cook mode</button></div>
+      <ol class="steps">${r.steps.map((s, i) => `<li><span class="n" aria-hidden="true">${i + 1}</span><p><span class="sr">Step ${i + 1}: </span>${withTimers(esc(s))}</p></li>`).join('')}</ol>
+    </section>
+    ${r.tip ? `<aside class="tip"><span class="tip-k">Tip from ${esc(kn)}</span>${esc(r.tip)}</aside>` : ''}
+    ${mine ? '' : madeBox(r)}
+    ${others.length ? `<section class="d-sec"><h2 class="h2">Other ways to make ${esc(r.dish)}</h2><ol class="ways">${others.map(wayRow).join('')}</ol></section>` : ''}
+    <section class="d-sec" id="comments" aria-label="Comments">
+      <h2 class="h2">Comments <span class="muted">${r.st.comments}</span></h2>
+      <form class="cform" data-form="comment" data-id="${esc(id)}">
+        <label class="sr" for="cm-${esc(id)}">Write a comment</label>
+        <textarea id="cm-${esc(id)}" maxlength="500" rows="2" placeholder="Ask ${esc(kn)} a question or say how it went" data-bind="cdraft.${esc(id)}">${esc(S.cdraft[id] || '')}</textarea>
+        <div class="row-between"><span class="hint">${mine ? '' : r.sample ? `+${PTS.commentOut} Tadka for your first comment` : `The cook gets +${PTS.commentIn} Tadka`}</span><button class="btn btn-primary btn-sm" type="submit">Post comment</button></div>
+      </form>
+      ${comments.length ? `<ul class="comments">${comments.map(c => commentItem(c, r)).join('')}</ul>` : '<p class="hint">No comments yet. Start the conversation.</p>'}
+    </section>
+    ${S.isOwner && r.owner && !mine ? `<div class="pad"><button class="link small danger" data-act="mod-recipe" data-u="${esc(r.owner)}" data-id="${esc(id)}">Remove this recipe from the hub (owner)</button></div>` : ''}
+  </div></div>`;
+}
+function marketBox(r, mine) {
+  if (!r.sell && !r.kit) return mine ? `<div class="market market-empty"><span><b>Sell this dish?</b> Add a price and people can send you orders.</span><button class="btn btn-sm" data-act="edit-recipe" data-id="${esc(r.id)}">Add a price</button></div>` : '';
+  const area = r.sell && r.sell.area ? `${ic('pin', 13)}${esc(r.sell.area)}` : '';
+  return `<div class="market">
+    <div class="market-k">${ic('bag', 15)} Buy from ${esc(kitchenName(r))}</div>
+    ${r.sell ? `<div class="offer"><div class="offer-main"><div class="offer-price">${inr(r.sell.price)} <small>/ ${esc(r.sell.per || 'plate')}</small></div><div class="offer-sub">${area}${r.sell.note ? `<span>${area ? '· ' : ''}${esc(r.sell.note)}</span>` : ''}</div></div>${mine ? '<span class="tag">Your listing</span>' : `<button class="btn btn-primary" data-act="order" data-id="${esc(r.id)}" data-kind="dish">Order</button>`}</div>` : ''}
+    ${r.kit ? `<div class="offer"><div class="offer-main"><div class="offer-price">${inr(r.kit.price)} <small>ingredient kit</small></div><div class="offer-sub">${esc(r.kit.has)}</div></div>${mine ? '<span class="tag">Your listing</span>' : `<button class="btn" data-act="order" data-id="${esc(r.id)}" data-kind="kit">Get kit</button>`}</div>` : ''}
+  </div>`;
+}
+function madeBox(r) {
+  const my = myMadeOf(r.id);
+  if (my) return `<div class="madeit"><h3>You made this</h3><p aria-label="${my.s} stars">${'★'.repeat(my.s)}${'☆'.repeat(5 - my.s)}${my.n ? ` · “${esc(my.n)}”` : ''}</p><button class="btn btn-sm" data-act="made" data-id="${esc(r.id)}">Change your rating</button></div>`;
+  return `<div class="madeit"><h3>Maine banaya!</h3><p>Cooked this? Tell ${esc(kitchenName(r))} how it went. ${r.sample ? `You get +${PTS.madeOut} Tadka.` : `You get +${PTS.madeOut} Tadka and the cook gets +${PTS.madeIn}.`}</p><button class="btn btn-primary" data-act="made" data-id="${esc(r.id)}">${ic('pot', 18)} I made this</button></div>`;
+}
+function commentItem(c, r) {
+  const own = c.u === S.me;
+  return `<li class="cm">${avatar(c.u, 32)}<div><div class="cm-head"><b>${esc(displayName(c.u))}</b>${c.u === r.owner ? '<span class="tag">Cook</span>' : ''}<span>${ago(c.at)}</span></div><p>${esc(c.t)}</p>
+    ${own ? `<button class="link small" data-act="cm-del" data-c="${esc(c.id)}">Delete</button>` : S.isOwner ? `<button class="link small danger" data-act="mod-cm" data-u="${esc(c.u)}" data-c="${esc(c.id)}">Remove</button>` : ''}</div></li>`;
+}
+
+function dishHint() {
+  const k = dishKey(S.draft.dish);
+  if (!k) return 'Use the name people search for. Pick from the list if the dish is already here.';
+  const g = derive().groups.get(k);
+  const n = g ? g.items.filter(r => r.id !== S.editing).length : 0;
+  return n ? `${n} ${plural(n, 'way')} already. Yours is ranked next to ${n === 1 ? 'it' : 'them'} by likes, ratings and cooks.` : 'New dish on FoodHub. Yours starts as the best way.';
+}
+function photoField(dr) {
+  const src = dr.photoPreview || (validAsset(dr.photo) ? '/_blob/' + dr.photo : '');
+  const photoUi = S.assets ? `<label class="photo-pick">${src ? `<img src="${esc(src)}" alt="Your dish">` : `<span>${ic('camera', 28)}Add a photo of your dish</span>`}<input id="f-photo" type="file" accept="image/jpeg,image/png,image/webp" data-photo="1" aria-label="Choose a photo"></label>
+    ${src ? '<button type="button" class="link small" data-act="photo-rm">Remove photo</button>' : ''}` : '';
+  const cur = dr.cover || {p: 0, t: 0};
+  const preview = {id: 'draft', dish: dr.dish || 'Your dish', title: dr.title || 'Your version', kitchen: clean(dr.kitchen, 40) || (myMember().kitchen) || 'Your kitchen', sample: true, preview: true, cover: cur, ing: [], st: {likes: 0, made: 0, rated: 0}, mins: clampInt(dr.mins, 1, 1440, 30), level: dr.level, diet: dr.diet, sell: null};
+  const labelUi = src ? '' : `<div class="cover-pick" inert>${card(preview)}</div>
+    <div class="swatches" role="group" aria-label="Label colour">${PAL.map((p, i) => `<button type="button" class="swatch" style="--sw:${p.bg}" aria-pressed="${cur.p === i}" data-act="cover-p" data-v="${i}" aria-label="${p.name}"></button>`).join('')}</div>
+    <div class="chips" role="group" aria-label="Label pattern">${PATS.map((t, i) => `<button type="button" class="chip chip-sm" aria-pressed="${cur.t === i}" data-act="cover-t" data-v="${i}">${PAT_NAMES[i]}</button>`).join('')}</div>`;
+  return `<div class="field"><span>${S.assets ? 'Photo' : 'Cover label'}</span>${photoUi}
+    ${src ? '' : `<span class="hint">${S.assets ? 'No photo? We print a label cover for you. Pick its colour:' : 'Your recipe gets a printed label cover. Pick its colour and pattern:'}</span>`}${labelUi}</div>`;
+}
+function vPost() {
+  const dr = S.draft;
+  const m = S.me ? S.members[S.me] : null;
+  const blocked = S.readOnly || !S.me || S.status !== 'loading';
+  const dishes = [...derive().groups.values()].map(g => g.dish).sort();
+  return `<section class="pad stack">
+    <h1 class="h1">${S.editing ? 'Edit your recipe' : 'Share your recipe'}</h1>
+    <p class="lead">${S.editing ? 'Changes show up for everyone right away.' : `Post your way of making a dish. Every like, comment and “I made this” earns you Tadka. Publishing earns +${PTS.post}.`}</p>
+    ${blocked ? `<div class="note">${S.status !== 'loading' ? 'The hub isn’t connected here, so posting is off.' : S.me ? 'You can browse this hub, but posting needs edit access from the hub’s owner.' : 'Sign in to claude.ai to post recipes.'}</div>` : ''}
+    <form class="form" data-form="post" novalidate>
+      ${m && m.kitchen ? `<p class="hint">Posting as <b>${esc(m.kitchen)}</b>${m.city ? ' · ' + esc(m.city) : ''}. <button type="button" class="link" data-act="profile-edit">Change</button></p>` : `
+      <fieldset><legend>Your kitchen</legend>
+        <label class="field"><span>Kitchen name *</span><input id="f-kitchen" type="text" maxlength="40" placeholder="e.g. Meera’s Rasoi" value="${esc(dr.kitchen)}" data-bind="draft.kitchen"></label>
+        <label class="field"><span>City or area</span><input id="f-city" type="text" maxlength="40" placeholder="e.g. Andheri, Mumbai" value="${esc(dr.city)}" data-bind="draft.city"></label>
+      </fieldset>`}
+      ${photoField(dr)}
+      <label class="field"><span>Dish name *</span><input id="f-dish" type="text" maxlength="60" list="dish-list" placeholder="e.g. Paneer Butter Masala" value="${esc(dr.dish)}" data-bind="draft.dish" data-live="dish-hint" autocomplete="off"></label>
+      <datalist id="dish-list">${dishes.map(x => `<option value="${esc(x)}"></option>`).join('')}</datalist>
+      <p class="hint" id="dish-hint">${esc(dishHint())}</p>
+      <label class="field"><span>Your version *</span><input id="f-title" type="text" maxlength="80" placeholder="What’s different about yours? e.g. Dhaba-style" value="${esc(dr.title)}" data-bind="draft.title"></label>
+      <div class="grid2">
+        <label class="field"><span>Category</span><select id="f-cat" data-bind="draft.cat">${CATS.map(c => `<option value="${esc(c)}"${c === dr.cat ? ' selected' : ''}>${esc(c)}</option>`).join('')}</select></label>
+        <label class="field"><span>Level</span><select id="f-level" data-bind="draft.level">${LEVELS_COOK.map(c => `<option${c === dr.level ? ' selected' : ''}>${c}</option>`).join('')}</select></label>
+      </div>
+      <div class="field"><span>Diet</span><div class="seg seg-wide" role="group" aria-label="Diet">${Object.entries(DIETS).map(([k, v]) => `<button type="button" aria-pressed="${dr.diet === k}" data-act="draft-diet" data-v="${k}">${dietMark(k)} ${v}</button>`).join('')}</div></div>
+      <div class="grid3">
+        <label class="field"><span>Time (min)</span><input id="f-mins" type="number" inputmode="numeric" min="1" max="1440" value="${esc(dr.mins)}" data-bind="draft.mins"></label>
+        <label class="field"><span>Serves</span><input id="f-serves" type="number" inputmode="numeric" min="1" max="50" value="${esc(dr.serves)}" data-bind="draft.serves"></label>
+        <label class="field"><span>Total cost ₹</span><input id="f-cost" type="number" inputmode="numeric" min="0" placeholder="e.g. 250" value="${esc(dr.cost)}" data-bind="draft.cost"></label>
+      </div>
+      <div class="field"><span>Ingredients *</span>
+        <div class="ing-edit-head hint" aria-hidden="true"><span>Qty</span><span>Unit</span><span>Ingredient</span></div>
+        ${dr.ing.map((x, i) => `<div class="ing-edit">
+          <input id="f-iq-${i}" type="text" inputmode="decimal" placeholder="1" value="${esc(x.q)}" data-bind="draft.ing.${i}.q" aria-label="Quantity for ingredient ${i + 1}">
+          <select id="f-iu-${i}" data-bind="draft.ing.${i}.u" aria-label="Unit for ingredient ${i + 1}">${UNITS.map(u => `<option value="${u}"${u === x.u ? ' selected' : ''}>${u || 'count'}</option>`).join('')}</select>
+          <input id="f-in-${i}" type="text" maxlength="80" placeholder="${i === 0 ? 'e.g. paneer, cubed' : 'Ingredient'}" value="${esc(x.n)}" data-bind="draft.ing.${i}.n" aria-label="Ingredient ${i + 1}">
+          <button type="button" class="icon-btn sm" data-act="ing-rm" data-i="${i}" aria-label="Remove ingredient ${i + 1}">${ic('close', 16)}</button>
+        </div>`).join('')}
+        <button type="button" class="btn btn-sm" data-act="ing-add">${ic('plus', 15)} Add ingredient</button>
+      </div>
+      <div class="field"><span>Method *</span>
+        ${dr.steps.map((s, i) => `<div class="step-edit"><span class="n" aria-hidden="true">${i + 1}</span><textarea id="f-st-${i}" maxlength="600" rows="2" placeholder="${i === 0 ? 'e.g. Soak the cashews in hot water for 15 minutes.' : 'Next step'}" data-bind="draft.steps.${i}" aria-label="Step ${i + 1}">${esc(s)}</textarea><button type="button" class="icon-btn sm" data-act="step-rm" data-i="${i}" aria-label="Remove step ${i + 1}">${ic('close', 16)}</button></div>`).join('')}
+        <button type="button" class="btn btn-sm" data-act="step-add">${ic('plus', 15)} Add step</button>
+        <span class="hint">Write times like “10 minutes” and cooks get a tap-to-start timer.</span>
+      </div>
+      <label class="field"><span>Tip from your kitchen</span><textarea id="f-tip" maxlength="300" rows="2" placeholder="The one thing that makes yours better" data-bind="draft.tip">${esc(dr.tip)}</textarea></label>
+      <label class="field"><span>Other names</span><input id="f-aka" type="text" maxlength="120" placeholder="Comma separated: paneer makhani, butter paneer" value="${esc(dr.aka)}" data-bind="draft.aka"></label>
+      <fieldset><legend>Sell it (optional)</legend>
+        <label class="toggle"><input type="checkbox" id="f-sell" data-check="draft.sellOn" ${dr.sellOn ? 'checked' : ''}> <span>Take orders for this dish</span></label>
+        ${dr.sellOn ? `<div class="grid2">
+          <label class="field"><span>Price ₹ *</span><input id="f-sp" type="number" inputmode="numeric" min="1" value="${esc(dr.sell.price)}" data-bind="draft.sell.price"></label>
+          <label class="field"><span>Per</span><input id="f-sper" type="text" maxlength="40" placeholder="plate · serves 2" value="${esc(dr.sell.per)}" data-bind="draft.sell.per"></label></div>
+          <label class="field"><span>Where you deliver</span><input id="f-sarea" type="text" maxlength="60" placeholder="e.g. Koramangala, Bengaluru" value="${esc(dr.sell.area)}" data-bind="draft.sell.area"></label>
+          <label class="field"><span>Note for buyers</span><input id="f-snote" type="text" maxlength="80" placeholder="e.g. Order a day ahead" value="${esc(dr.sell.note)}" data-bind="draft.sell.note"></label>` : ''}
+        <label class="toggle"><input type="checkbox" id="f-kit" data-check="draft.kitOn" ${dr.kitOn ? 'checked' : ''}> <span>Sell an ingredient kit</span></label>
+        ${dr.kitOn ? `<div class="grid2"><label class="field"><span>Kit price ₹ *</span><input id="f-kp" type="number" inputmode="numeric" min="1" value="${esc(dr.kit.price)}" data-bind="draft.kit.price"></label>
+          <label class="field"><span>What’s inside</span><input id="f-khas" type="text" maxlength="100" placeholder="e.g. Masala mix + cashews" value="${esc(dr.kit.has)}" data-bind="draft.kit.has"></label></div>` : ''}
+        <p class="hint">Buyers send an order request. You confirm it in Me → Orders and collect payment yourself.</p>
+      </fieldset>
+      <div id="form-err" class="err" role="alert">${esc(S.formErr)}</div>
+      <div class="form-actions">
+        ${S.editing ? '<button type="button" class="btn" data-act="cancel-edit">Cancel</button>' : ''}
+        <button class="btn btn-primary btn-block" type="submit"${blocked || S.busy ? ' disabled' : ''}>${S.busy ? 'Publishing…' : S.editing ? 'Save changes' : `Publish recipe · +${PTS.post} Tadka`}</button>
+      </div>
+    </form>
+  </section>`;
+}
+
+function badgesFor(uid) {
+  const d = derive();
+  const mine = d.all.filter(r => r.owner === uid);
+  const sum = f => mine.reduce((a, r) => a + f(r), 0);
+  const likesIn = sum(r => r.st.L.filter(x => x.u !== uid).length);
+  const madeIn = sum(r => r.st.M.filter(x => x.u !== uid).length);
+  const ordersIn = sum(r => r.st.O.filter(x => x.u !== uid).length);
+  const m = S.members[uid] || sanMember({});
+  const madeOut = new Set(m.made.filter(x => { const r = d.byId.get(x.r); return r && r.owner !== uid; }).map(x => x.r)).size;
+  const commented = new Set(m.comments.filter(c => { const r = d.byId.get(c.r); return r && r.owner !== uid; }).map(c => c.r)).size;
+  return [
+    {k: 'Pehla Post', d: 'Post your first recipe', have: mine.length, need: 1},
+    {k: 'Dil Jeet Liya', d: '25 likes on your recipes', have: likesIn, need: 25},
+    {k: 'Crowd Favourite', d: '100 likes on your recipes', have: likesIn, need: 100},
+    {k: 'Ghar Ghar Mein', d: '5 people made your recipes', have: madeIn, need: 5},
+    {k: 'Taste Tester', d: 'Cook 3 recipes by others', have: madeOut, need: 3},
+    {k: 'Chatterbox', d: 'Comment on 5 recipes', have: commented, need: 5},
+    {k: 'Dukaan Open', d: 'List a dish or kit for sale', have: mine.some(r => r.sell || r.kit) ? 1 : 0, need: 1},
+    {k: 'Pehla Order', d: 'Get your first order', have: ordersIn, need: 1},
+    {k: 'Best Way', d: 'Rank #1 for a dish with 2+ ways', have: mine.some(r => r.rank === 1 && r.ways > 1) ? 1 : 0, need: 1}
+  ];
+}
+function leaderboard() {
+  const since = S.lbTab === 'week' ? now() - 7 * DAY : 0;
+  const rows = [];
+  const ids = new Set([...Object.keys(S.members), ...Object.keys(S.kitchens)]);
+  if (S.me) ids.add(S.me);
+  for (const uid of ids) {
+    const p = pointsFor(uid, since);
+    if (p.total > 0 || uid === S.me) rows.push({uid, pts: p.total, lv: levelOf(since ? pointsFor(uid).total : p.total).cur.n, city: (S.members[uid] || {}).city || ''});
+  }
+  if (!since && !S.config.hideSamples) {
+    const ks = new Map();
+    for (const s of S.starters) { const k = ks.get(s.kitchen) || {sample: s.kitchen, city: s.city, pts: 0}; k.pts += PTS.post + PTS.likeIn * s.base.likes + PTS.madeIn * s.base.made; ks.set(s.kitchen, k); }
+    for (const k of ks.values()) rows.push({...k, lv: levelOf(k.pts).cur.n});
+  }
+  rows.sort((a, b) => b.pts - a.pts);
+  rows.forEach((r, i) => r.rank = i + 1);
+  let shown = rows.slice(0, 15);
+  const meRow = rows.find(r => r.uid && r.uid === S.me);
+  if (meRow && !shown.includes(meRow)) shown = [...shown, meRow];
+  if (!shown.length || (since && !rows.some(r => r.pts > 0))) return emptyBox('No Tadka earned this week yet', 'Post a recipe or cook one to take the #1 spot.');
+  return `<ol class="lb">${shown.map(r => {
+    const name = r.sample ? r.sample : displayName(r.uid);
+    return `<li class="${r.uid && r.uid === S.me ? 'me' : ''}"><span class="rk">${r.rank}</span>${r.sample ? initialAv(r.sample, 36, hashStr(r.sample)) : avatar(r.uid, 36)}
+      <span class="nm"><b>${esc(name)}${r.uid === S.me ? ' (you)' : ''}</b><span>${esc(r.lv)}${r.city ? ' · ' + esc(r.city) : ''}${r.sample ? ' · Sample' : ''}</span></span>
+      <span class="pts">${fmtNum(r.pts)}</span></li>`;
+  }).join('')}</ol>`;
+}
+function vRewards() {
+  if (S.status !== 'loading') return vNoData();
+  const p = S.me ? pointsFor(S.me) : {total: 0, spent: 0, balance: 0};
+  const lv = levelOf(p.total);
+  const badges = S.me ? badgesFor(S.me) : [];
+  return `<section class="pad stack">
+    <div class="wallet">
+      <div class="row-between"><span class="k">Your Tadka points</span><span class="lvl">${esc(lv.cur.n)}</span></div>
+      <div class="wallet-num num">${fmtNum(p.balance)}<small>to spend</small></div>
+      ${lv.next ? `<div class="bar" role="progressbar" aria-label="Progress to ${esc(lv.next.n)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${lv.pct}"><span style="width:${lv.pct}%"></span></div><div class="wallet-sub">${fmtNum(lv.next.min - p.total)} more to reach <b>${esc(lv.next.n)}</b></div>` : '<div class="wallet-sub">Top level reached. Legend!</div>'}
+      <div class="wallet-cut" aria-hidden="true"></div>
+      <div class="row-between wallet-foot"><span>Earned ${fmtNum(p.total)} · spent ${fmtNum(p.spent)}</span><button class="btn btn-primary btn-sm" data-act="boost-open">${ic('megaphone', 15)} Boost a recipe</button></div>
+    </div>
+    <section class="stack" style="gap:8px" aria-label="Leaderboard">
+      <div class="sec-title"><h2 class="h2">Leaderboard</h2><div class="seg" role="group" aria-label="Period">${[['week', 'This week'], ['all', 'All time']].map(([k, v]) => `<button aria-pressed="${S.lbTab === k}" data-act="lb-tab" data-v="${k}">${v}</button>`).join('')}</div></div>
+      ${leaderboard()}
+    </section>
+    ${S.me ? `<section class="stack" style="gap:12px" aria-label="Badges"><h2 class="h2">Badges</h2><div class="badges">${badges.map(b => { const ok = b.have >= b.need; return `<div class="badge${ok ? '' : ' locked'}"><span class="stamp${b.k.split(' ').some(w => w.length >= 8) ? ' long' : ''}">${esc(b.k)}</span><span class="badge-d">${esc(b.d)}</span><span class="badge-p">${ok ? 'Earned' : `${Math.min(b.have, b.need)} / ${b.need}`}</span></div>`; }).join('')}</div></section>` : ''}
+    <section aria-label="How to earn"><h2 class="h2" style="margin-bottom:6px">How to earn Tadka</h2><ul class="earn">${EARN.map(([l, v]) => `<li><span>${esc(l)}</span><b>+${v}</b></li>`).join('')}</ul></section>
+    <aside class="note"><b>How the best way is picked.</b> Every way of making a dish gets a score: likes + 2 × comments + 5 × “I made this”, plus a bonus for ratings above 3★ once 3 people have rated it. Boosting costs ${BOOST.cost} Tadka for ${BOOST.hours} hours in “Promoted”. It never changes the ranking.</aside>
+  </section>`;
+}
+
+function profileForm() {
+  const pf = S.pf;
+  return `<form class="form card-form" data-form="profile">
+    <label class="field"><span>Kitchen name</span><input id="p-kitchen" type="text" maxlength="40" placeholder="e.g. Meera’s Rasoi" value="${esc(pf.kitchen)}" data-bind="pf.kitchen"></label>
+    <label class="field"><span>City or area</span><input id="p-city" type="text" maxlength="40" placeholder="e.g. Andheri, Mumbai" value="${esc(pf.city)}" data-bind="pf.city"></label>
+    <label class="field"><span>About your kitchen</span><textarea id="p-bio" maxlength="160" rows="2" placeholder="What you cook best, where you deliver" data-bind="pf.bio">${esc(pf.bio)}</textarea></label>
+    <div class="form-actions"><button type="button" class="btn" data-act="profile-cancel">Cancel</button><button class="btn btn-primary btn-block" type="submit">Save</button></div>
+  </form>`;
+}
+function incomingOrders() {
+  const out = [];
+  for (const [uid, m] of Object.entries(S.members)) for (const o of m.orders) if (o.seller && o.seller === S.me && uid !== S.me) out.push({...o, u: uid});
+  return out.sort((a, b) => b.at - a.at);
+}
+function orderCard(o, asSeller) {
+  const r = derive().byId.get(o.r);
+  const st = statusOf(o);
+  const offer = r ? (o.kind === 'kit' ? r.kit : r.sell) : null;
+  const total = offer ? inr(offer.price * o.qty) : '';
+  const who = asSeller ? `${avatar(o.u, 32)}<div class="who"><b>${esc(displayName(o.u))}</b><span>${ago(o.at)}</span></div>` : `${r ? cover(r, 'thumb') : ''}<div class="who"><b>${esc(r ? kitchenName(r) : 'Removed recipe')}</b><span>${ago(o.at)}</span></div>`;
+  const btns = !asSeller ? '' : st === 'sent' ? `<button class="btn btn-sm btn-primary" data-act="ord-status" data-o="${esc(o.id)}" data-s="accepted">Accept</button><button class="btn btn-sm" data-act="ord-status" data-o="${esc(o.id)}" data-s="declined">Decline</button>`
+    : st === 'accepted' ? `<button class="btn btn-sm btn-primary" data-act="ord-status" data-o="${esc(o.id)}" data-s="ready">Mark ready</button>`
+    : st === 'ready' ? `<button class="btn btn-sm btn-primary" data-act="ord-status" data-o="${esc(o.id)}" data-s="done">Mark delivered</button>` : '';
+  return `<div class="order"><div class="order-top">${who}<span class="status ${st}">${STATUS_LABEL[st]}</span></div>
+    <div class="order-body">${o.qty} × ${r ? esc(r.dish) : 'item'}${o.kind === 'kit' ? ' ingredient kit' : ''}${total ? ' · <b>' + total + '</b>' : ''}${o.when ? ' · for ' + esc(o.when) : ''}${o.note ? `<br><q>${esc(o.note)}</q>` : ''}</div>
+    ${btns ? `<div class="chips">${btns}</div>` : ''}</div>`;
+}
+function activity() {
+  const d = derive(); const ev = [];
+  for (const r of d.all) {
+    if (r.owner !== S.me) continue;
+    for (const l of r.st.L) if (l.u !== S.me) ev.push({u: l.u, at: l.at, t: 'liked', r, p: PTS.likeIn});
+    for (const c of r.st.C) if (c.u !== S.me) ev.push({u: c.u, at: c.at, t: 'commented on', r, p: PTS.commentIn, x: c.t});
+    for (const m of r.st.M) if (m.u !== S.me) ev.push({u: m.u, at: m.at, t: 'made', r, p: PTS.madeIn, x: '★'.repeat(m.s)});
+    for (const o of r.st.O) if (o.u !== S.me) ev.push({u: o.u, at: o.at, t: o.kind === 'kit' ? 'ordered a kit for' : 'ordered', r, p: PTS.orderIn});
+  }
+  for (const f of (d.followers.get(S.me) || [])) ev.push({u: f.u, at: f.at, t: 'followed your kitchen', p: PTS.follower});
+  ev.sort((a, b) => b.at - a.at);
+  if (!ev.length) return emptyBox('No activity yet', 'When people like, comment on, cook or order your recipes, it shows up here with the Tadka you earned.');
+  return `<div>${ev.slice(0, 40).map(e => `<div class="ev">${avatar(e.u, 32)}<div><b>${esc(displayName(e.u))}</b> ${e.t}${e.r ? ` <b>${esc(e.r.dish)}</b>` : ''}${e.x ? `<small>${esc(e.x.slice(0, 90))}</small>` : ''}<small>${ago(e.at)}</small></div><span class="plus-pts">+${e.p}</span></div>`).join('')}</div>`;
+}
+function vMe() {
+  if (S.status !== 'loading') return vNoData();
+  if (!S.me) return emptyBox('Sign in to set up your kitchen', 'Open this page on claude.ai while signed in.');
+  const d = derive();
+  const m = myMember();
+  const name = (S.meInfo && S.meInfo.name) || personName(S.me);
+  const mine = d.all.filter(r => r.owner === S.me).sort((a, b) => b.at - a.at);
+  const likesIn = mine.reduce((a, r) => a + r.st.L.filter(x => x.u !== S.me).length, 0);
+  const madeIn = mine.reduce((a, r) => a + r.st.M.filter(x => x.u !== S.me).length, 0);
+  const followers = (d.followers.get(S.me) || []).length;
+  const inc = incomingOrders();
+  const waiting = inc.filter(o => statusOf(o) === 'sent').length;
+  let body = '';
+  if (S.meTab === 'recipes') {
+    body = mine.length ? `<ul class="list">${mine.map(r => `<li class="list-row"><div class="lr-hit" role="button" tabindex="0" data-act="open" data-id="${esc(r.id)}">${cover(r, 'thumb')}<div class="lr-main"><div class="lr-title">${esc(r.dish)}</div><div class="lr-sub">${esc(r.title)}</div><div class="lr-sub">${fmtNum(r.st.likes)} likes · ${fmtNum(r.st.made)} made · ${r.st.comments} comments${r.ways > 1 ? ` · #${r.rank} of ${r.ways}` : ''}${d.boosts.some(b => b.r === r.id) ? ' · <span class="tag tag-promo">Boosted</span>' : ''}</div></div></div>
+      <div class="lr-actions"><button class="icon-btn sm" data-act="edit-recipe" data-id="${esc(r.id)}" aria-label="Edit ${esc(r.dish)}">${ic('edit', 16)}</button><button class="icon-btn sm" data-act="del-recipe" data-id="${esc(r.id)}" aria-label="Delete ${esc(r.dish)}">${ic('trash', 16)}</button></div></li>`).join('')}</ul>`
+      : emptyBox('No recipes yet', `Share your first one and earn +${PTS.post} Tadka.`, `<button class="btn btn-primary" data-act="tab" data-tab="post">${ic('plus', 16)} Share a recipe</button>`);
+  } else if (S.meTab === 'saved') {
+    const rs = S.saves.map(id => d.byId.get(id)).filter(Boolean);
+    body = rs.length ? `<div class="grid">${rs.map(r => card(r)).join('')}</div>` : emptyBox('Nothing saved yet', 'Tap the bookmark on any recipe to keep it here.');
+  } else if (S.meTab === 'cooked') {
+    const rs = [...m.made].sort((a, b) => b.at - a.at).map(x => ({x, r: d.byId.get(x.r)})).filter(o => o.r);
+    body = rs.length ? `<ul class="list">${rs.map(({x, r}) => `<li class="list-row"><div class="lr-hit" role="button" tabindex="0" data-act="open" data-id="${esc(r.id)}">${cover(r, 'thumb')}<div class="lr-main"><div class="lr-title">${esc(r.dish)}</div><div class="lr-sub">${esc(r.title)} · ${esc(kitchenName(r))}</div><div class="lr-sub" aria-label="You rated it ${x.s} stars">${'★'.repeat(x.s)}${'☆'.repeat(5 - x.s)} · ${ago(x.at)}</div></div></div></li>`).join('')}</ul>`
+      : emptyBox('You haven’t marked anything as cooked', 'Tap “I made this” on a recipe after you cook it. You earn Tadka and help others find the best way.');
+  } else if (S.meTab === 'orders') {
+    const myOrders = [...m.orders].sort((a, b) => b.at - a.at);
+    body = `<div class="stack" style="gap:14px">
+      ${mine.some(r => r.sell || r.kit) || inc.length ? `<div class="stack" style="gap:10px"><h3 class="h2" style="font-size:19px">Orders for your kitchen</h3>${inc.length ? `<div class="orders">${inc.map(o => orderCard(o, true)).join('')}</div>` : '<p class="hint">No orders yet. Share your recipe link on WhatsApp to get the first one.</p>'}</div>` : ''}
+      <div class="stack" style="gap:10px"><h3 class="h2" style="font-size:19px">Your orders</h3>${myOrders.length ? `<div class="orders">${myOrders.map(o => orderCard(o, false)).join('')}</div>` : '<p class="hint">Dishes and kits you order from cooks show up here.</p>'}</div>
+    </div>`;
+  } else body = activity();
+  return `<section class="pad stack">
+    <div class="profile">${avatar(S.me, 60)}
+      <div class="profile-main"><h1 class="h1" style="font-size:27px">${esc(m.kitchen || name || 'Your kitchen')}</h1>
+        <p class="hint">${[m.kitchen && name ? esc(name) : '', m.city ? esc(m.city) : '', esc(levelOf(pointsFor(S.me).total).cur.n)].filter(Boolean).join(' · ')}</p>
+        ${m.bio ? `<p style="font-size:14.5px">${esc(m.bio)}</p>` : ''}</div>
+    </div>
+    <div class="row-between">
+      <div class="seg" role="group" aria-label="I’m here to">${[['cook', 'I cook'], ['foodie', 'I’m a foodie']].map(([k, v]) => `<button aria-pressed="${m.role === k}" data-act="role" data-v="${k}" data-stay="1">${v}</button>`).join('')}</div>
+      ${S.pf ? '' : `<button class="btn btn-sm" data-act="profile-edit">${ic('edit', 15)} Edit profile</button>`}
+    </div>
+    ${S.pf ? profileForm() : ''}
+    <div class="stats4"><div><b>${mine.length}</b><span>Recipes</span></div><div><b>${fmtNum(likesIn)}</b><span>Likes</span></div><div><b>${fmtNum(madeIn)}</b><span>Cooked by others</span></div><div><b>${fmtNum(followers)}</b><span>Followers</span></div></div>
+    <div class="chips scroll-x" role="group" aria-label="Show">${ME_TABS.map(([k, v]) => `<button class="chip" aria-pressed="${S.meTab === k}" data-act="me-tab" data-v="${k}">${v}${k === 'orders' && waiting ? ` <span class="dot">${waiting}</span>` : ''}</button>`).join('')}</div>
+    <div>${body}</div>
+    ${S.isOwner ? `<fieldset><legend>Hub settings (only you see this)</legend>
+      <label class="toggle"><input type="checkbox" id="samples-on" data-setting="samples" ${S.config.hideSamples ? '' : 'checked'}> <span>Show the sample kitchens and recipes</span></label>
+      <p class="hint">Samples are marked “Sample” everywhere. Turn them off once real cooks have posted enough.</p>
+      <p class="hint">People you share this page with can browse and search. To post, like, comment and order they need edit access to the page, which you choose when you share it.</p>
+    </fieldset>` : ''}
+  </section>`;
+}
+
+/* ---------- modals ---------- */
+function vModal() {
+  const mo = S.modal; if (!mo) return '';
+  const head = t => `<div class="row-between"><h2 class="h2" id="mt">${t}</h2><button class="icon-btn" data-act="modal-close" aria-label="Close">${ic('close')}</button></div>`;
+  const wrap = inner => `<div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="mt">${inner}</div>`;
+  const d = derive();
+  if (mo.type === 'made') {
+    const r = d.byId.get(mo.id); if (!r) return '';
+    return wrap(`${head('Maine banaya!')}<p>How did your ${esc(r.dish)} turn out?</p>
+      <div class="stars-in" role="radiogroup" aria-label="Your rating">${[1, 2, 3, 4, 5].map(n => `<button role="radio" aria-checked="${mo.s === n}" class="${mo.s >= n ? 'on' : ''}" data-act="made-star" data-v="${n}" aria-label="${n} ${plural(n, 'star')}">${ic('star', 24, mo.s >= n)}</button>`).join('')}</div>
+      <label class="field"><span>What did you change? (optional)</span><textarea id="m-note" maxlength="200" rows="2" placeholder="e.g. Used less chilli, added kasuri methi" data-bind="modal.n">${esc(mo.n || '')}</textarea></label>
+      <div class="err" role="alert">${esc(mo.err || '')}</div>
+      <button class="btn btn-primary btn-block" data-act="made-save">${mo.edit ? 'Update rating' : `Save · +${PTS.madeOut} Tadka`}</button>`);
+  }
+  if (mo.type === 'order') {
+    const r = d.byId.get(mo.id); if (!r) return '';
+    const offer = mo.kind === 'kit' ? r.kit : r.sell; if (!offer) return '';
+    return wrap(`${head(mo.kind === 'kit' ? 'Get the ingredient kit' : 'Order this dish')}
+      <p><b>${esc(r.dish)}</b> · ${esc(r.title)}<br><span class="hint">from ${esc(kitchenName(r))}${r.sell && r.sell.area ? ' · ' + esc(r.sell.area) : ''}</span></p>
+      ${mo.kind === 'kit' ? `<p class="hint">${esc(offer.has)}</p>` : ''}
+      <div class="row-between"><span><b>${inr(offer.price)}</b> ${mo.kind === 'kit' ? 'per kit' : '/ ' + esc(offer.per || 'plate')}</span>
+        <div class="stepper" role="group" aria-label="Quantity"><button data-act="ord-qty" data-d="-1" aria-label="One less">${ic('minus', 16)}</button><span class="num">${mo.qty}</span><button data-act="ord-qty" data-d="1" aria-label="One more">${ic('plus', 16)}</button></div></div>
+      <label class="field"><span>When do you need it?</span><input id="m-when" type="text" maxlength="60" placeholder="e.g. Sunday lunch" value="${esc(mo.when || '')}" data-bind="modal.when"></label>
+      <label class="field"><span>Delivery or pickup details${r.sample ? '' : ' *'}</span><textarea id="m-note" maxlength="300" rows="2" placeholder="Area, landmark, how the cook can reach you" data-bind="modal.note">${esc(mo.note || '')}</textarea></label>
+      <p class="hint">${r.sample ? 'This is a sample kitchen, so the order is only a demo.' : 'There’s no online payment here: you pay the cook directly. Members of this hub can see order details, so share only what you’re comfortable with.'}</p>
+      <div class="err" role="alert">${esc(mo.err || '')}</div>
+      <button class="btn btn-primary btn-block" data-act="ord-send">Send order request · ${inr(offer.price * mo.qty)}</button>`);
+  }
+  if (mo.type === 'boost') {
+    const p = pointsFor(S.me);
+    const mine = d.all.filter(r => r.owner === S.me);
+    const active = new Set(d.boosts.map(b => b.r));
+    return wrap(`${head('Boost a recipe')}
+      <p>Put one of your recipes in “Promoted” at the top of Home for ${BOOST.hours} hours. It costs ${BOOST.cost} Tadka and you have <b>${fmtNum(p.balance)}</b>.</p>
+      ${mine.length ? `<div class="pick" role="radiogroup" aria-label="Recipe to boost">${mine.map(r => `<label class="pick-row"><input type="radio" name="boost" value="${esc(r.id)}" ${mo.id === r.id ? 'checked' : ''} ${active.has(r.id) ? 'disabled' : ''}><span>${esc(r.dish)} · ${esc(r.title)}${active.has(r.id) ? ' <span class="tag tag-promo">Boosted</span>' : ''}</span></label>`).join('')}</div>` : '<p class="hint">Post a recipe first, then boost it.</p>'}
+      <div class="err" role="alert">${esc(mo.err || '')}</div>
+      <button class="btn btn-primary btn-block" data-act="boost-go"${mine.length ? '' : ' disabled'}>Boost for ${BOOST.cost} Tadka</button>`);
+  }
+  if (mo.type === 'confirm') return wrap(`${head(esc(mo.title))}<p>${esc(mo.body)}</p><div class="form-actions"><button class="btn" data-act="modal-close">Cancel</button><button class="btn btn-ink btn-block" data-act="confirm-yes">${esc(mo.yes)}</button></div>`);
+  if (mo.type === 'copy') return wrap(`${head('Copy this')}<p class="hint">Copying isn’t allowed here. Select the text and copy it yourself.</p><textarea id="m-copy" rows="8" readonly>${esc(mo.text)}</textarea>`);
+  return '';
+}
+function vCook() {
+  const c = S.cook; if (!c) return '';
+  const r = derive().byId.get(c.id); if (!r) return '';
+  const i = Math.min(c.i, r.steps.length - 1), n = r.steps.length;
+  const f = (S.serves[r.id] || r.serves) / r.serves;
+  const ings = stepIngs(r, r.steps[i]);
+  return `<div class="cook" role="dialog" aria-modal="true" aria-label="Cook mode">
+    <div class="row-between"><span class="cook-k">Step ${i + 1} of ${n}</span><button class="icon-btn" data-act="cook-close" aria-label="Close cook mode">${ic('close')}</button></div>
+    <div class="cook-dish">${esc(r.dish)}</div>
+    <div class="cook-dots" aria-hidden="true">${r.steps.map((_, j) => `<span class="${j <= i ? 'on' : ''}"></span>`).join('')}</div>
+    <p class="cook-step" aria-live="polite">${withTimers(esc(r.steps[i]))}</p>
+    ${ings.length ? `<div class="cook-ings"><span class="cook-k">You’ll need</span>${ings.map(x => { const L = ingLine(x, f); return `<span class="cook-ing">${esc((L.qty ? L.qty + ' ' : '') + L.name)}</span>`; }).join('')}</div>` : ''}
+    <div class="cook-nav"><button class="btn" data-act="cook-step" data-d="-1"${i === 0 ? ' disabled' : ''}>Back</button>${i < n - 1 ? '<button class="btn btn-primary" data-act="cook-step" data-d="1">Next step</button>' : `<button class="btn btn-primary" data-act="cook-done">${r.owner === S.me ? 'Done' : 'Done! Rate it'}</button>`}</div>
+  </div>`;
+}
+
+/* ---------- render ---------- */
+const VIEWS = {home: vHome, search: vSearch, post: vPost, rewards: vRewards, me: vMe};
+let queued = false, last = {main: '', tab: '', sheet: '', modal: '', cook: '', banner: '', open: null};
+function scheduleRender() { if (!queued) { queued = true; requestAnimationFrame(render); } }
+function bump() { dataVersion++; scheduleRender(); }
+function captureFocus() {
+  const a = document.activeElement;
+  if (!a || !a.id || a === document.body) return null;
+  let s = null, e = null;
+  try { s = a.selectionStart; e = a.selectionEnd; } catch (err) { /* not a text field */ }
+  return {id: a.id, s, e};
+}
+function restoreFocus(k) {
+  if (!k) return;
+  const el = document.getElementById(k.id);
+  if (!el || el === document.activeElement) return;
+  el.focus({preventScroll: true});
+  try { if (k.s != null && el.setSelectionRange) el.setSelectionRange(k.s, k.e); } catch (err) { /* ignore */ }
+}
+function swap(el, key, html) {
+  if (last[key] === html) return false;
+  el.innerHTML = html; last[key] = html; return true;
+}
+function render() {
+  queued = false;
+  const keep = captureFocus();
+  // top bar
+  const p = S.me && S.status === 'loading' ? pointsFor(S.me) : null;
+  swap($('#top'), 'top', `<button class="brand" data-act="tab" data-tab="home" aria-label="FoodHub home">Food<span>Hub</span></button><span class="top-sp"></span>
+    <button class="tadka-pill" data-act="tab" data-tab="rewards" aria-label="Tadka points: ${p ? p.balance : 0}">${ic('flame', 17, true)}<span class="num">${p ? fmtNum(p.balance) : '0'}</span></button>
+    <button class="me-btn" data-act="tab" data-tab="me" aria-label="Your kitchen">${S.me ? avatar(S.me, 32) : initialAv('?', 32, 3)}</button>`);
+  let banner = '';
+  if (S.slow) banner = 'Can’t reach the hub right now. What you see may be out of date.';
+  else if (S.status === 'loading' && S.readOnly) banner = S.me ? 'You’re browsing. To post, like or comment, ask the hub’s owner for edit access.' : 'Sign in to claude.ai to post, like and comment.';
+  swap($('#banner'), 'banner', banner ? `<div class="banner" role="status">${esc(banner)}</div>` : '');
+  // main
+  const main = $('#main');
+  const sameTab = last.tab === S.tab;
+  const scroll = main.scrollTop;
+  swap(main, 'main', VIEWS[S.tab]());
+  main.scrollTop = sameTab ? scroll : 0;
+  last.tab = S.tab;
+  swap($('#tabs'), 'tabs', TAB_DEF.map(([k, l, icon]) => k === 'post'
+    ? `<button class="tab tab-post" data-act="tab" data-tab="post" aria-current="${S.tab === 'post' ? 'page' : 'false'}"><span class="plus">${ic('plus', 24)}</span>${l}</button>`
+    : `<button class="tab" data-act="tab" data-tab="${k}" aria-current="${S.tab === k ? 'page' : 'false'}">${ic(icon, 22)}${l}</button>`).join(''));
+  // recipe sheet
+  const sheet = $('#sheet');
+  if (S.open) {
+    const body = $('#sheet-body');
+    const sc = body && last.open === S.open ? body.scrollTop : 0;
+    const fresh = last.open !== S.open;
+    sheet.hidden = false;
+    swap(sheet, 'sheet', vDetail(S.open));
+    const nb = $('#sheet-body'); if (nb) nb.scrollTop = sc;
+    if (fresh) { const b = sheet.querySelector('.sheet-bar .icon-btn'); if (b) b.focus({preventScroll: true}); }
+    last.open = S.open;
+  } else if (!sheet.hidden) { sheet.hidden = true; swap(sheet, 'sheet', ''); last.open = null; }
+  // modal + cook
+  const modal = $('#modal');
+  const mh = vModal();
+  modal.hidden = !mh;
+  if (swap(modal, 'modal', mh) && mh && !modal.contains(document.activeElement)) { const b = modal.querySelector('.modal-card button, .modal-card textarea'); if (b && !keep) b.focus({preventScroll: true}); }
+  const cook = $('#cook');
+  const ch = vCook();
+  cook.hidden = !ch;
+  swap(cook, 'cook', ch);
+  restoreFocus(keep);
+  resolveNames();
+}
+function refreshLive(which) {
+  const el = document.getElementById(which);
+  if (!el) return;
+  if (which === 'results') el.innerHTML = dishResults();
+  if (which === 'dish-hint') el.textContent = dishHint();
+  last.main = '';
+}
+
+/* ---------- writing (each person writes only their own documents) ---------- */
+function canAct() {
+  if (S.status !== 'loading' || !S.db) { toast('The hub isn’t connected here.'); return false; }
+  if (!S.me) { toast('Sign in to claude.ai to join in.'); return false; }
+  if (S.readOnly) { toast('You can browse, but posting and reacting need edit access from the hub’s owner.'); return false; }
+  if (!(S.def.members && S.def.kitchens)) { toast('Still loading the hub. Try again in a moment.'); return false; }
+  return true;
+}
+function payloadOf(coll) {
+  return coll === 'members' ? {...S.members[S.me], v: 1} : {recipes: S.kitchens[S.me].recipes.map(storeRecipe)};
+}
+function saveMine(coll, fields) {
+  const store = coll === 'members' ? S.members : S.kitchens;
+  const cur = store[S.me] || (coll === 'members' ? sanMember({}) : {recipes: []});
+  const merged = {...cur, ...fields};
+  const local = coll === 'members' ? sanMember(merged) : sanKitchen({recipes: merged.recipes.map(r => r.ks ? storeRecipe(r) : r)});
+  const size = JSON.stringify(coll === 'members' ? local : {recipes: local.recipes.map(storeRecipe)}).length;
+  if (size > 240000) { toast(coll === 'kitchens' ? 'Your kitchen is full. Delete an old recipe to post more.' : 'Your activity history is full.'); return false; }
+  store[S.me] = local;
+  pending[coll]++;
+  bump();
+  Q[coll] = Q[coll].then(() => doWrite(coll, fields)).catch(err => writeFailed(coll, err)).finally(() => { pending[coll]--; });
+  return true;
+}
+async function doWrite(coll, fields, retried) {
+  const ref = S.db.collection(coll).doc(S.me);
+  try {
+    if (!exists[coll]) { const snap = await ref.get(); if (snap && snap.exists) exists[coll] = true; }
+    if (exists[coll]) await ref.update(JSON.parse(JSON.stringify(fields)));
+    else { await ref.set(JSON.parse(JSON.stringify({...payloadOf(coll), joined: now()}))); exists[coll] = true; }
+  } catch (e) {
+    if (!retried && e && e.code === 'unavailable') { await sleep(600 + Math.random() * 900); return doWrite(coll, fields, true); }
+    throw e;
+  }
+}
+function writeFailed(coll, err) {
+  const code = err && err.code;
+  const store = coll === 'members' ? S.members : S.kitchens;
+  if (serverMine[coll]) store[S.me] = serverMine[coll]; else delete store[S.me];
+  if (code === 'invalid_argument' && S.canWrite !== true) { S.readOnly = true; toast('You can browse, but posting and reacting need edit access from the hub’s owner.'); }
+  else if (code === 'quota_exceeded') toast('The hub is out of space. The owner needs to clear old data.');
+  else if (code === 'resource_exhausted') toast('Too many actions at once. Wait a few seconds and try again.');
+  else if (code === 'revoked') { S.readOnly = true; toast('Your access to this hub changed.'); }
+  else toast('Couldn’t save that. Check your connection and try again.');
+  bump();
+}
+function writeSaves(ids) {
+  if (!S.db || !S.me) { toast('Sign in to save recipes.'); return; }
+  const before = S.saves;
+  S.saves = ids; pending.saves++; bump();
+  Q.saves = Q.saves.then(() => S.db.doc('data/users/' + S.me + '/saves').set({ids, at: now()}))
+    .catch(() => { S.saves = before; toast('Couldn’t save that recipe.'); bump(); })
+    .finally(() => { pending.saves--; });
+}
+function uploadMsg(e) {
+  const c = e && e.code;
+  return c === 'too_large' ? 'That photo is too big. Try a smaller one.' : c === 'unsupported_type' ? 'Use a JPG, PNG or WebP photo.'
+    : c === 'quota_or_state' ? 'Photo storage for this hub is full. Publish without a photo.' : c === 'rate_limited' ? 'Too many uploads. Wait a minute and try again.'
+    : 'Couldn’t upload the photo. Try again, or publish without it.';
+}
+async function compressImage(file) {
+  let bmp = null;
+  try { bmp = await createImageBitmap(file); } catch (e) { return file; }
+  const s = Math.min(1, 1280 / Math.max(bmp.width, bmp.height));
+  const c = document.createElement('canvas');
+  c.width = Math.round(bmp.width * s); c.height = Math.round(bmp.height * s);
+  c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+  return await new Promise(res => c.toBlob(b => res(b || file), 'image/jpeg', 0.82));
+}
+
+/* ---------- navigation ---------- */
+function go(tab) {
+  if (!TABS.includes(tab)) return;
+  S.tab = tab; S.open = null;
+  if (location.hash !== '#' + tab) location.hash = tab; else scheduleRender();
+  scheduleRender();
+}
+function openRecipe(id) { if (location.hash !== '#recipe-' + id) location.hash = 'recipe-' + id; S.open = id; scheduleRender(); }
+function closeRecipe() { S.open = null; if (location.hash !== '#' + S.tab) location.hash = S.tab; scheduleRender(); }
+function applyHash() {
+  let h = '';
+  try { h = decodeURIComponent((location.hash || '').slice(1)); } catch (e) { h = ''; }
+  if (h.startsWith('recipe-') && RID.test(h.slice(7))) S.open = h.slice(7);
+  else if (TABS.includes(h)) { S.tab = h; S.open = null; }
+  else S.open = null;
+  scheduleRender();
+}
+function askConfirm(title, body, yes, fn) { S.modal = {type: 'confirm', title, body, yes, fn}; scheduleRender(); }
+let toastT = 0;
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2800);
+}
+function copyText(text, ok) {
+  try {
+    const p = navigator.clipboard && navigator.clipboard.writeText(text);
+    if (!p) throw new Error('no clipboard');
+    p.then(() => toast(ok), () => { S.modal = {type: 'copy', text}; scheduleRender(); });
+  } catch (e) { S.modal = {type: 'copy', text}; scheduleRender(); }
+}
+
+/* ---------- timers + cook mode ---------- */
+let timerInt = 0, audioCtx = null, wakeLock = null;
+function tickTimer() {
+  const box = $('#timer'), t = S.timer;
+  if (!t) { box.hidden = true; clearInterval(timerInt); return; }
+  const left = Math.max(0, Math.round((t.end - now()) / 1000));
+  if (!left && !t.done) { t.done = true; beep(); }
+  box.hidden = false;
+  box.classList.toggle('done', t.done);
+  box.querySelector('.t-left').textContent = t.done ? 'Time’s up!' : fmtClock(left);
+  box.querySelector('.t-label').textContent = t.label;
+  box.querySelector('button').textContent = t.done ? 'OK' : 'Stop';
+}
+function beep() {
+  try {
+    if (!audioCtx) return;
+    [0, 0.35, 0.7].forEach(off => {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.frequency.value = 880; o.connect(g); g.connect(audioCtx.destination);
+      const st = audioCtx.currentTime + off;
+      g.gain.setValueAtTime(0.0001, st); g.gain.exponentialRampToValueAtTime(0.3, st + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, st + 0.25);
+      o.start(st); o.stop(st + 0.3);
+    });
+  } catch (e) { /* audio blocked */ }
+  try { navigator.vibrate && navigator.vibrate([200, 100, 200]); } catch (e) { /* ignore */ }
+}
+async function setWake(on) {
+  try {
+    if (on && 'wakeLock' in navigator && !wakeLock) wakeLock = await navigator.wakeLock.request('screen');
+    if (!on && wakeLock) { await wakeLock.release(); wakeLock = null; }
+  } catch (e) { wakeLock = null; }
+}
+
+/* ---------- actions ---------- */
+const ACT = {
+  'tab': el => { if (el.dataset.tab === 'post' && !S.editing && S.tab !== 'post') S.formErr = ''; go(el.dataset.tab); },
+  'open': el => openRecipe(el.dataset.id),
+  'close': () => closeRecipe(),
+  'find': el => { S.mode = 'dish'; S.q = el.dataset.q || ''; S.heroQ = ''; S.compare = null; go('search'); },
+  'feed-cat': el => { S.feedCat = el.dataset.v; scheduleRender(); },
+  'feed-sort': el => { S.feedSort = el.dataset.v === 'new' ? 'new' : 'popular'; scheduleRender(); },
+  'mode': el => { S.mode = el.dataset.v === 'ing' ? 'ing' : 'dish'; scheduleRender(); },
+  'filter': el => { const k = el.dataset.v; S.filters[k] = !S.filters[k]; scheduleRender(); },
+  'compare': el => { S.compare = S.compare === el.dataset.k ? null : el.dataset.k; scheduleRender(); },
+  'have-add': el => { addHave(el.dataset.v); },
+  'have-rm': el => { S.have.splice(+el.dataset.i, 1); scheduleRender(); },
+  'have-clear': () => { S.have = []; scheduleRender(); },
+  'post-dish': el => { S.editing = null; S.draft = newDraft(); S.draft.dish = el.dataset.q || ''; S.formErr = ''; go('post'); },
+  'welcome-off': () => { S.welcomeOff = true; try { localStorage.setItem('fh-welcome-off', '1'); } catch (e) { /* ignore */ } scheduleRender(); },
+  'role': el => {
+    if (!canAct()) return;
+    const v = el.dataset.v === 'cook' ? 'cook' : 'foodie';
+    saveMine('members', {role: v});
+    if (el.dataset.stay) return;
+    if (v === 'cook') { S.pf = {kitchen: myMember().kitchen, city: myMember().city, bio: myMember().bio}; go('me'); toast('Name your kitchen to get started'); }
+    else go('search');
+  },
+  'like': el => {
+    const id = el.dataset.id; if (!canAct()) return;
+    const likes = myMember().likes, has = likes.some(l => l.r === id);
+    saveMine('members', {likes: has ? likes.filter(l => l.r !== id) : [...likes, {r: id, at: now()}]});
+    const r = derive().byId.get(id);
+    if (!has && r && r.owner && r.owner !== S.me) toast(`Liked. ${kitchenName(r)} earns +${PTS.likeIn} Tadka`);
+  },
+  'save': el => { const id = el.dataset.id; const has = S.saves.includes(id); writeSaves(has ? S.saves.filter(x => x !== id) : [...S.saves, id]); toast(has ? 'Removed from saved' : 'Saved. Find it in Me → Saved'); },
+  'follow': el => {
+    const u = el.dataset.u; if (!canAct() || u === S.me) return;
+    const f = myMember().follows, has = f.some(x => x.u === u);
+    saveMine('members', {follows: has ? f.filter(x => x.u !== u) : [...f, {u, at: now()}]});
+    if (!has) toast(`Following ${displayName(u)}`);
+  },
+  'serves': el => { const r = derive().byId.get(el.dataset.id); if (!r) return; S.serves[r.id] = Math.min(50, Math.max(1, (S.serves[r.id] || r.serves) + +el.dataset.d)); scheduleRender(); },
+  'check': el => { const id = el.dataset.id, i = +el.dataset.i; const c = S.checked[id] || []; S.checked[id] = c.includes(i) ? c.filter(x => x !== i) : [...c, i]; scheduleRender(); },
+  'copy-list': el => {
+    const r = derive().byId.get(el.dataset.id); if (!r) return;
+    const sv = S.serves[r.id] || r.serves, f = sv / r.serves, c = S.checked[r.id] || [];
+    const lines = r.ing.filter((x, i) => !c.includes(i) && !x.staple).map(x => { const L = ingLine(x, f); return '- ' + (L.qty ? L.qty + ' ' : '') + L.name; });
+    copyText(`Shopping list: ${r.dish} (${sv} ${plural(sv, 'serving')})\n${lines.join('\n')}`, 'Shopping list copied');
+  },
+  'to-comments': () => { const el = $('#comments'); if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'}); },
+  'cook': el => { S.cook = {id: el.dataset.id, i: 0}; setWake(true); scheduleRender(); },
+  'cook-step': el => { if (!S.cook) return; const r = derive().byId.get(S.cook.id); if (!r) return; S.cook.i = Math.min(r.steps.length - 1, Math.max(0, S.cook.i + +el.dataset.d)); scheduleRender(); },
+  'cook-close': () => { S.cook = null; setWake(false); scheduleRender(); },
+  'cook-done': () => { const id = S.cook && S.cook.id; S.cook = null; setWake(false); const r = derive().byId.get(id); if (r && r.owner !== S.me) openMade(id); scheduleRender(); },
+  'timer': el => {
+    const secs = parseInt(el.dataset.s, 10); if (!secs) return;
+    try { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.resume) audioCtx.resume(); } catch (e) { audioCtx = null; }
+    S.timer = {end: now() + secs * 1000, label: el.dataset.l || '', done: false};
+    clearInterval(timerInt); timerInt = setInterval(tickTimer, 1000); tickTimer();
+  },
+  'timer-stop': () => { S.timer = null; tickTimer(); },
+  'made': el => openMade(el.dataset.id),
+  'made-star': el => { if (S.modal) { S.modal.s = +el.dataset.v; S.modal.err = ''; scheduleRender(); } },
+  'made-save': () => {
+    const mo = S.modal; if (!mo || !canAct()) return;
+    if (!(mo.s >= 1)) { mo.err = 'Tap a star rating first.'; scheduleRender(); return; }
+    const r = derive().byId.get(mo.id); if (!r) return;
+    const prev = myMadeOf(mo.id);
+    const made = myMember().made.filter(x => x.r !== mo.id);
+    made.push({r: mo.id, s: mo.s, n: clean(mo.n, 200), at: prev ? prev.at : now()});
+    if (saveMine('members', {made})) {
+      S.modal = null;
+      toast(prev ? 'Rating updated' : r.owner === S.me ? 'Saved' : r.sample ? `Shabaash! +${PTS.madeOut} Tadka` : `Shabaash! +${PTS.madeOut} Tadka for you, +${PTS.madeIn} for ${kitchenName(r)}`);
+      scheduleRender();
+    }
+  },
+  'order': el => { if (!canAct()) return; S.modal = {type: 'order', id: el.dataset.id, kind: el.dataset.kind === 'kit' ? 'kit' : 'dish', qty: 1, when: '', note: ''}; scheduleRender(); },
+  'ord-qty': el => { if (S.modal) { S.modal.qty = Math.min(50, Math.max(1, S.modal.qty + +el.dataset.d)); scheduleRender(); } },
+  'ord-send': () => {
+    const mo = S.modal; if (!mo || !canAct()) return;
+    const r = derive().byId.get(mo.id); if (!r) return;
+    if (!r.sample && !clean(mo.note, 300)) { mo.err = 'Add delivery or pickup details so the cook can reach you.'; scheduleRender(); return; }
+    const order = {id: newId('o'), r: r.id, kind: mo.kind, seller: r.owner || null, qty: mo.qty, when: clean(mo.when, 60), note: String(mo.note || '').trim().slice(0, 300), at: now()};
+    if (saveMine('members', {orders: [...myMember().orders, order]})) {
+      S.modal = null;
+      toast(r.sample ? 'Demo order saved. See it in Me → Orders.' : `Order request sent to ${kitchenName(r)}. They’ll confirm it here.`);
+      scheduleRender();
+    }
+  },
+  'ord-status': el => {
+    if (!canAct() || !STATUSES.includes(el.dataset.s)) return;
+    const st = myMember().status.filter(x => x.o !== el.dataset.o);
+    st.push({o: el.dataset.o, s: el.dataset.s, at: now()});
+    if (saveMine('members', {status: st})) toast(el.dataset.s === 'declined' ? 'Order declined' : 'Order updated');
+  },
+  'boost-open': () => { if (!canAct()) return; S.modal = {type: 'boost', id: null}; scheduleRender(); },
+  'boost-go': () => {
+    const mo = S.modal; if (!mo || !canAct()) return;
+    if (!mo.id) { mo.err = 'Pick a recipe to boost.'; scheduleRender(); return; }
+    const bal = pointsFor(S.me).balance;
+    if (bal < BOOST.cost) { mo.err = `You need ${BOOST.cost - bal} more Tadka. Post or cook recipes to earn it.`; scheduleRender(); return; }
+    if (saveMine('members', {boosts: [...myMember().boosts, {r: mo.id, at: now(), until: now() + BOOST.hours * 3600000}]})) { S.modal = null; toast('Boosted for 24 hours. It’s under “Promoted” on Home.'); scheduleRender(); }
+  },
+  'modal-close': () => { S.modal = null; scheduleRender(); },
+  'confirm-yes': () => { const fn = S.modal && S.modal.fn; S.modal = null; scheduleRender(); if (fn) fn(); },
+  'cm-del': el => {
+    if (!canAct()) return;
+    askConfirm('Delete your comment?', 'It disappears for everyone.', 'Delete', () => saveMine('members', {comments: myMember().comments.filter(c => c.id !== el.dataset.c)}));
+  },
+  'mod-cm': el => {
+    const uid = el.dataset.u, cid = el.dataset.c;
+    askConfirm('Remove this comment?', 'It disappears for everyone. Only the hub owner can do this.', 'Remove', async () => {
+      const m = S.members[uid]; if (!m || !S.db) return;
+      try { await S.db.collection('members').doc(uid).update({comments: m.comments.filter(c => c.id !== cid)}); toast('Comment removed'); } catch (e) { toast('Couldn’t remove it.'); }
+    });
+  },
+  'mod-recipe': el => {
+    const uid = el.dataset.u, id = el.dataset.id;
+    askConfirm('Remove this recipe?', 'It disappears from the hub for everyone. Only the hub owner can do this.', 'Remove', async () => {
+      const k = S.kitchens[uid]; if (!k || !S.db) return;
+      try { await S.db.collection('kitchens').doc(uid).update({recipes: k.recipes.filter(r => r.id !== id).map(storeRecipe)}); closeRecipe(); toast('Recipe removed'); } catch (e) { toast('Couldn’t remove it.'); }
+    });
+  },
+  'profile-edit': () => { const m = myMember(); S.pf = {kitchen: m.kitchen, city: m.city, bio: m.bio}; if (S.tab !== 'me') go('me'); else scheduleRender(); },
+  'profile-cancel': () => { S.pf = null; scheduleRender(); },
+  'me-tab': el => { S.meTab = el.dataset.v; scheduleRender(); },
+  'lb-tab': el => { S.lbTab = el.dataset.v === 'all' ? 'all' : 'week'; scheduleRender(); },
+  'edit-recipe': el => {
+    const r = myKitchen().recipes.find(x => x.id === el.dataset.id); if (!r) return;
+    S.draft = {...newDraft(), dish: r.dish, title: r.title, cat: r.cat, level: r.level, diet: r.diet, mins: String(r.mins), serves: String(r.serves), cost: r.cost ? String(r.cost) : '',
+      ing: r.ing.map(i => ({q: i.q == null ? '' : String(i.q), u: i.u, n: i.n})), steps: [...r.steps], tip: r.tip, aka: r.aka.join(', '),
+      sellOn: !!r.sell, sell: r.sell ? {price: String(r.sell.price), per: r.sell.per, area: r.sell.area, note: r.sell.note} : {price: '', per: 'plate', area: '', note: ''},
+      kitOn: !!r.kit, kit: r.kit ? {price: String(r.kit.price), has: r.kit.has} : {price: '', has: ''}, photo: r.photo, cover: r.cover || coverIdx(r)};
+    S.editing = r.id; S.formErr = ''; go('post');
+  },
+  'cancel-edit': () => { S.editing = null; S.draft = newDraft(); S.formErr = ''; scheduleRender(); },
+  'del-recipe': el => {
+    if (!canAct()) return;
+    const id = el.dataset.id;
+    askConfirm('Delete this recipe?', 'Its likes, comments and ratings stop showing. This can’t be undone.', 'Delete', () => {
+      const r = myKitchen().recipes.find(x => x.id === id);
+      if (saveMine('kitchens', {recipes: myKitchen().recipes.filter(x => x.id !== id).map(storeRecipe)})) {
+        if (r && r.photo && S.assets) S.assets.delete(r.photo).catch(() => {});
+        if (S.open === id) closeRecipe();
+        toast('Recipe deleted');
+      }
+    });
+  },
+  'ing-add': () => { if (S.draft.ing.length < 40) S.draft.ing.push({q: '', u: '', n: ''}); scheduleRender(); },
+  'ing-rm': el => { S.draft.ing.splice(+el.dataset.i, 1); if (!S.draft.ing.length) S.draft.ing.push({q: '', u: '', n: ''}); scheduleRender(); },
+  'step-add': () => { if (S.draft.steps.length < 25) S.draft.steps.push(''); scheduleRender(); },
+  'step-rm': el => { S.draft.steps.splice(+el.dataset.i, 1); if (!S.draft.steps.length) S.draft.steps.push(''); scheduleRender(); },
+  'draft-diet': el => { S.draft.diet = DIETS[el.dataset.v] ? el.dataset.v : 'veg'; scheduleRender(); },
+  'cover-p': el => { S.draft.cover = {...(S.draft.cover || {t: 0}), p: +el.dataset.v}; scheduleRender(); },
+  'cover-t': el => { S.draft.cover = {...(S.draft.cover || {p: 0}), t: +el.dataset.v}; scheduleRender(); },
+  'photo-rm': () => { if (S.draft.photoPreview) URL.revokeObjectURL(S.draft.photoPreview); S.draft.photoBlob = null; S.draft.photoPreview = ''; S.draft.photo = null; scheduleRender(); }
+};
+function coverIdx(r) { const c = coverOf(r); return {p: PAL.indexOf(c.p), t: PATS.indexOf(c.t)}; }
+function openMade(id) {
+  if (!canAct()) return;
+  const prev = myMadeOf(id);
+  S.modal = {type: 'made', id, s: prev ? prev.s : 0, n: prev ? prev.n : '', edit: !!prev};
+  scheduleRender();
+}
+function addHave(v) {
+  const parts = String(v || '').split(',').map(s => clean(s, 30).toLowerCase()).filter(Boolean);
+  for (const p of parts) if (!S.have.some(h => normIng(h) === normIng(p)) && S.have.length < 20) S.have.push(p);
+  scheduleRender();
+}
+const FORMS = {
+  hero: () => { S.q = S.heroQ; S.mode = 'dish'; S.compare = null; go('search'); },
+  search: () => { const el = $('#q'); if (el) el.blur(); },
+  have: () => { addHave(S.haveIn); S.haveIn = ''; scheduleRender(); },
+  comment: form => {
+    const id = form.dataset.id; if (!canAct()) return;
+    const t = String(S.cdraft[id] || '').trim().slice(0, 500);
+    if (!t) { toast('Write something first.'); return; }
+    const r = derive().byId.get(id); if (!r) return;
+    const first = !myMember().comments.some(c => c.r === id);
+    if (saveMine('members', {comments: [...myMember().comments, {id: newId('c'), r: id, t, at: now()}]})) {
+      S.cdraft[id] = '';
+      toast(first && r.owner !== S.me ? `Comment posted · +${PTS.commentOut} Tadka` : 'Comment posted');
+    }
+  },
+  profile: () => {
+    if (!canAct()) return;
+    const pf = S.pf || {};
+    if (saveMine('members', {kitchen: clean(pf.kitchen, 40), city: clean(pf.city, 40), bio: clean(pf.bio, 160)})) { S.pf = null; toast('Profile saved'); scheduleRender(); }
+  },
+  post: () => submitPost()
+};
+async function submitPost() {
+  if (S.busy || !canAct()) return;
+  const dr = S.draft;
+  const fail = msg => { S.formErr = msg; S.busy = false; scheduleRender(); requestAnimationFrame(() => { const el = $('#form-err'); if (el) el.scrollIntoView({block: 'center', behavior: 'smooth'}); }); };
+  const m = myMember();
+  if (!m.kitchen && !clean(dr.kitchen, 40)) return fail('Give your kitchen a name. It shows on your recipes.');
+  const title = clean(dr.title, 80);
+  let dish = clean(dr.dish, 60);
+  if (!dish) return fail('Add the dish name.');
+  const known = derive().groups.get(dishKey(dish));
+  if (known) dish = known.dish;
+  else if (dish === dish.toLowerCase()) dish = dish.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  if (!title) return fail('Add what makes your version different, like “Dhaba-style”.');
+  const ing = dr.ing.map(x => ({q: parseQty(x.q), u: UNITS.includes(x.u) ? x.u : '', n: clean(x.n, 80)})).filter(x => x.n);
+  if (ing.length < 2) return fail('Add at least 2 ingredients.');
+  const steps = dr.steps.map(s => clean(s, 600)).filter(Boolean);
+  if (!steps.length) return fail('Add at least one step to the method.');
+  let sell = null, kit = null;
+  if (dr.sellOn) { const p = clampInt(dr.sell.price, 0, 100000, 0); if (!p) return fail('Add a price for the dish, or turn off “Take orders”.'); sell = {price: p, per: clean(dr.sell.per, 40) || 'plate', area: clean(dr.sell.area, 60), note: clean(dr.sell.note, 80)}; }
+  if (dr.kitOn) { const p = clampInt(dr.kit.price, 0, 100000, 0); if (!p) return fail('Add a price for the kit, or turn it off.'); kit = {price: p, has: clean(dr.kit.has, 100) || 'Ingredient kit'}; }
+  S.formErr = ''; S.busy = true; scheduleRender();
+  let photo = validAsset(dr.photo);
+  if (dr.photoBlob && S.assets) {
+    try { const res = await S.assets.upload(dr.photoBlob, {type: dr.photoBlob.type || 'image/jpeg'}); photo = validAsset(res && res.id); }
+    catch (e) { return fail(uploadMsg(e)); }
+  }
+  const id = S.editing || newId('r');
+  const old = myKitchen().recipes.find(r => r.id === id);
+  const rec = {id, dish, title, cat: CATS.includes(dr.cat) ? dr.cat : 'Main course', diet: DIETS[dr.diet] ? dr.diet : 'veg', level: LEVELS_COOK.includes(dr.level) ? dr.level : 'Easy',
+    mins: clampInt(dr.mins, 1, 1440, 30), serves: clampInt(dr.serves, 1, 50, 2), cost: clampInt(dr.cost, 0, 100000, 0),
+    aka: String(dr.aka || '').split(',').map(s => clean(s, 30)).filter(Boolean).slice(0, 6), ing: ing.slice(0, 40), steps: steps.slice(0, 25), tip: clean(dr.tip, 300),
+    photo: photo || null, cover: {p: clampInt(dr.cover && dr.cover.p, 0, PAL.length - 1, 0), t: clampInt(dr.cover && dr.cover.t, 0, PATS.length - 1, 0)}, sell, kit, at: old ? old.at : now()};
+  if (old) rec.edited = now();
+  if (!m.kitchen) saveMine('members', {kitchen: clean(dr.kitchen, 40), city: clean(dr.city, 40), role: m.role || 'cook'});
+  const ok = saveMine('kitchens', {recipes: [...myKitchen().recipes.filter(r => r.id !== id).map(storeRecipe), rec]});
+  S.busy = false;
+  if (!ok) { scheduleRender(); return; }
+  if (old && old.photo && old.photo !== rec.photo && S.assets) S.assets.delete(old.photo).catch(() => {});
+  if (dr.photoPreview) URL.revokeObjectURL(dr.photoPreview);
+  const wasEdit = !!S.editing;
+  S.editing = null; S.draft = newDraft(); S.formErr = '';
+  toast(wasEdit ? 'Recipe updated' : `Published! +${PTS.post} Tadka`);
+  S.tab = 'home';
+  openRecipe(id);
+}
+
+/* ---------- events ---------- */
+function setPath(o, path, v) {
+  const ks = path.split('.');
+  let cur = o;
+  for (let i = 0; i < ks.length - 1; i++) {
+    const k = ks[i];
+    if (k === '__proto__' || k === 'constructor' || k === 'prototype') return;
+    if (cur[k] == null || typeof cur[k] !== 'object') cur[k] = /^\d+$/.test(ks[i + 1]) ? [] : {};
+    cur = cur[k];
+  }
+  const lk = ks[ks.length - 1];
+  if (lk === '__proto__' || lk === 'constructor' || lk === 'prototype') return;
+  cur[lk] = v;
+}
+function bindEvents() {
+  document.addEventListener('click', e => {
+    if (e.target.id === 'modal') { S.modal = null; scheduleRender(); return; }
+    const el = e.target.closest('[data-act]');
+    if (!el || el.disabled) return;
+    const fn = ACT[el.dataset.act];
+    if (!fn) return;
+    if (el.tagName === 'BUTTON' || el.getAttribute('role') === 'button') e.preventDefault();
+    fn(el, e);
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      if (S.modal) { S.modal = null; scheduleRender(); }
+      else if (S.cook) ACT['cook-close']();
+      else if (S.open) closeRecipe();
+      return;
+    }
+    if (S.cook && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { ACT['cook-step']({dataset: {d: e.key === 'ArrowRight' ? '1' : '-1'}}); return; }
+    const el = e.target;
+    if ((e.key === 'Enter' || e.key === ' ') && el.getAttribute && el.getAttribute('role') === 'button' && el.dataset.act && el.tagName !== 'BUTTON') { e.preventDefault(); el.click(); }
+  });
+  document.addEventListener('input', e => {
+    const el = e.target;
+    if (el.dataset && el.dataset.bind) {
+      setPath(S, el.dataset.bind, el.value);
+      last.main = '';
+      if (el.dataset.live) refreshLive(el.dataset.live);
+    }
+  });
+  document.addEventListener('change', e => {
+    const el = e.target;
+    if (el.dataset.check) { setPath(S, el.dataset.check, el.checked); scheduleRender(); return; }
+    if (el.dataset.photo) { handlePhoto(el); return; }
+    if (el.dataset.setting === 'samples') { setSamples(el.checked); return; }
+    if (el.name === 'boost' && S.modal) { S.modal.id = el.value; S.modal.err = ''; scheduleRender(); return; }
+    if (el.tagName === 'SELECT' && el.dataset.bind) { setPath(S, el.dataset.bind, el.value); last.main = ''; }
+  });
+  document.addEventListener('submit', e => {
+    e.preventDefault();
+    const f = FORMS[e.target.dataset.form];
+    if (f) f(e.target);
+  });
+  document.addEventListener('error', e => {
+    const t = e.target;
+    if (t && t.tagName === 'IMG' && t.dataset.fb) { const c = t.closest('.cover'); if (c) c.classList.remove('photo'); t.remove(); }
+  }, true);
+  window.addEventListener('hashchange', applyHash);
+}
+async function handlePhoto(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  if (!/^image\/(jpeg|png|webp)$/.test(file.type)) { toast('Choose a JPG, PNG or WebP photo.'); return; }
+  try {
+    const blob = await compressImage(file);
+    if (S.draft.photoPreview) URL.revokeObjectURL(S.draft.photoPreview);
+    S.draft.photoBlob = blob; S.draft.photoPreview = URL.createObjectURL(blob);
+    scheduleRender();
+  } catch (e) { toast('Couldn’t read that photo. Try another.'); }
+}
+async function setSamples(show) {
+  if (!S.isOwner || !S.db) return;
+  try { await S.db.doc('config/hub').set({hideSamples: !show, at: now()}); toast(show ? 'Sample recipes are showing' : 'Sample recipes are hidden'); }
+  catch (e) { toast('Couldn’t change that setting.'); scheduleRender(); }
+}
+
+/* ---------- connecting to the shared store ---------- */
+function markLoaded(k, snap) {
+  S.loaded[k] = true;
+  if (!snap || !snap.metadata || !snap.metadata.fromCache) S.def[k] = true;
+  if (S.def.starter && S.def.members && S.def.kitchens) { S.slow = false; clearTimeout(S.slowTimer); }
+}
+function subscribe() {
+  const db = S.db;
+  S.slowTimer = setTimeout(() => { if (!(S.def.starter && S.def.members && S.def.kitchens)) { S.slow = true; scheduleRender(); } }, 10000);
+  const onErr = k => e => {
+    S.loaded[k] = true;
+    if (k === 'starter' || k === 'members' || k === 'kitchens') { S.slow = true; clearTimeout(S.slowTimer); }
+    if (e && e.code === 'revoked') S.readOnly = true;
+    bump();
+  };
+  try {
+    db.collection('starter').onSnapshot(snap => {
+      S.starters = snap.docs.filter(d => d.exists).map(d => sanRecipe({...d.data(), id: d.id}, true)).filter(Boolean);
+      markLoaded('starter', snap); bump();
+    }, onErr('starter'));
+    db.collection('members').onSnapshot(snap => {
+      const next = {};
+      for (const d of snap.docs) if (d.exists) next[d.id] = sanMember(d.data());
+      if (S.me) {
+        if (next[S.me]) exists.members = true;
+        serverMine.members = next[S.me] || null;
+        if (pending.members > 0 && S.members[S.me]) next[S.me] = S.members[S.me];
+      }
+      S.members = next; markLoaded('members', snap); bump();
+    }, onErr('members'));
+    db.collection('kitchens').onSnapshot(snap => {
+      const next = {};
+      for (const d of snap.docs) if (d.exists) next[d.id] = sanKitchen(d.data());
+      if (S.me) {
+        if (next[S.me]) exists.kitchens = true;
+        serverMine.kitchens = next[S.me] || null;
+        if (pending.kitchens > 0 && S.kitchens[S.me]) next[S.me] = S.kitchens[S.me];
+      }
+      S.kitchens = next; markLoaded('kitchens', snap); bump();
+    }, onErr('kitchens'));
+    db.doc('config/hub').onSnapshot(d => { S.config = d.exists ? (d.data() || {}) : {}; markLoaded('config', d); bump(); }, onErr('config'));
+    if (S.me) db.doc('data/users/' + S.me + '/saves').onSnapshot(d => {
+      if (!pending.saves) S.saves = d.exists ? arr((d.data() || {}).ids).filter(x => typeof x === 'string' && RID.test(x)) : [];
+      markLoaded('saves', d); bump();
+    }, onErr('saves'));
+  } catch (e) { S.slow = true; bump(); }
+}
+async function connect() {
+  for (let i = 0; i < 30 && !(window.claude && typeof window.claude.use === 'function'); i++) await sleep(100);
+  const c = window.claude;
+  const use = n => { try { return Promise.resolve(c.use(n)).catch(() => null); } catch (e) { return Promise.resolve(null); } };
+  if (!c || typeof c.use !== 'function') { S.status = 'none'; scheduleRender(); return; }
+  const [db, user, assets] = await Promise.all([use('db'), use('user'), use('assets')]);
+  S.db = db; S.user = user; S.assets = assets;
+  if (user) {
+    try { const me = await user.me(); S.me = (me && me.id) || null; S.meInfo = me; S.isOwner = !!(me && me.isOwner); } catch (e) { S.me = null; }
+    try { S.canWrite = await user.can('data.write'); } catch (e) { S.canWrite = null; }
+  }
+  if (!db) { S.status = 'none'; scheduleRender(); return; }
+  S.status = 'loading';
+  if (!S.me || S.canWrite === false) S.readOnly = true;
+  subscribe();
+  bump();
+}
+
+/* ---------- boot ---------- */
+function hotState() { return {tab: S.tab, open: S.open, q: S.q, mode: S.mode, have: S.have, feedCat: S.feedCat, editing: S.editing, draft: {...S.draft, photoBlob: null, photoPreview: ''}}; }
+function start(hot) {
+  const h = hot && typeof hot === 'object' ? hot : {};
+  if (TABS.includes(h.tab)) S.tab = h.tab;
+  if (typeof h.q === 'string') S.q = h.q;
+  if (h.mode === 'ing') S.mode = 'ing';
+  if (Array.isArray(h.have)) S.have = h.have.filter(x => typeof x === 'string').slice(0, 20);
+  if (typeof h.feedCat === 'string') S.feedCat = h.feedCat;
+  if (h.draft && typeof h.draft === 'object' && Array.isArray(h.draft.ing) && Array.isArray(h.draft.steps)) { S.draft = {...newDraft(), ...h.draft, photoBlob: null, photoPreview: ''}; if (typeof h.editing === 'string') S.editing = h.editing; }
+  bindEvents();
+  applyHash();
+  render();
+  try { if (window.claude && window.claude.hot && window.claude.hot.snapshot) window.claude.hot.snapshot(hotState); } catch (e) { /* ignore */ }
+  connect();
+  setInterval(() => { if (!document.hidden) bump(); }, 60000);
+}
+const hot = window.claude && window.claude.hot;
+if (hot && typeof hot.ready === 'function') hot.ready(start); else start((hot && hot.data) || {});
+})();
+</script>
+</body>
+</html>
